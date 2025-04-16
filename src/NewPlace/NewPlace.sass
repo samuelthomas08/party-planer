@@ -20,6 +20,8 @@
         position: absolute
         bottom: 0
         left: 0
+        @media screen and (max-height: 1200px)
+            height: calc( 82vh - 2rem )
         .layout
             position: relative
             min-width: 70%
@@ -44,8 +46,6 @@
                 &:hover
                     text-decoration: underline
             img
-                // width: 1600px
-                // height: 1000px
                 max-height: 85%
                 max-width: 100%
                 position: absolute
