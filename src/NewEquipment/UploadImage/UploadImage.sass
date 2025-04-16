@@ -1,0 +1,72 @@
+@import '../../_basic'
+
+.UploadImage
+    height: 45rem
+    width: 42rem
+    background-color: $white
+    position: absolute
+    top: 50%
+    left: 50%
+    transform: translate(-50%, -50%)
+    z-index: 100
+    padding: 2rem
+    border-radius: 1rem
+    .head
+        display: flex
+        justify-content: space-between
+        align-items: center
+        .close
+            font-size: 1.5rem
+            cursor: pointer
+    form
+        margin-top: 2rem
+        input[type="file"]
+            display: none
+        label
+            background-color: $gray
+            cursor: pointer
+            display: flex
+            gap: 1rem
+            width: 12rem
+            height: 3rem
+            justify-content: center
+            align-items: center
+            border-radius: 1rem
+            transition: 150ms
+            &:hover
+                background-color: darken($gray, 3%)
+    .img-name
+        margin-top: 1.5rem
+    .img
+        max-width: 38rem
+        max-height: 25rem
+        margin-top: 1rem
+    .btn-save
+        padding: .8rem
+        width: 12rem
+        font-size: 1rem
+        display: flex
+        justify-content: center
+        align-items: center
+        gap: .5rem
+        border-radius: 1rem
+        border: none
+        background-color: $primary
+        color: $white
+        cursor: pointer
+        transition: 150ms
+        position: absolute
+        bottom: 1.5rem
+        &:hover
+            background-color: darken($primary, 5%)
+    .disabled
+        background-color: #768898
+        color: $white
+        cursor: not-allowed
+        &:hover
+            background-color: #768898
+            color: $white
+            cursor: not-allowed
+    .upload-fail-text
+        color: $red
+        margin-top: 1rem

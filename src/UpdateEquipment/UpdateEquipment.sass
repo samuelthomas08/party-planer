@@ -1,0 +1,181 @@
+@import '../_basic'
+    
+.blur
+    position: absolute
+    height: 100vh
+    width: 100%
+    background-color: rgba(0, 0, 0, .5)
+    z-index: 100
+
+.UpdateEquipment
+    height: 100vh
+    width: 100%
+    main
+        position: absolute
+        top: 50%
+        left: 50%
+        transform: translate(-50%, -50%)
+        height: 45rem
+        .head
+            display: flex
+            align-items: center
+            gap: 1rem
+            .back-to-dashboard
+                font-size: 1.5rem
+                color: #000
+                transition: 150ms
+                &:hover
+                    transform: translateX(-6px)
+        .form
+            display: flex
+            flex-direction: row
+            justify-content: space-between
+            width: 80rem
+            .left
+                width: 50%
+                .category-selection
+                    background-color: $gray
+                    display: flex
+                    width: 20rem
+                    border-radius: 1rem
+                    overflow: hidden
+                    p
+                        width: 100%
+                        text-align: center
+                        padding: .8rem
+                        cursor: pointer
+                    .selected
+                        background-color: $primary
+                        color: $white
+                h3
+                    margin-bottom: 1rem
+                    margin-top: 3rem
+                    
+                input
+                    background-color: $gray
+                    border: none
+                    padding: 1rem
+                    font-size: 1rem
+                    border-radius: 1rem
+                    width: 100%
+                    outline: none
+                textarea
+                    resize: none
+                    width: 100%
+                    height: 20rem
+                    background-color: $gray
+                    border: none
+                    padding: 1rem
+                    font-size: 1rem
+                    border-radius: 1rem
+                    outline: none
+
+        .invisible
+            display: none
+
+        .right-0
+            position: relative
+            overflow: hidden
+            height: 42.5rem
+            width: 40%        
+            .foot, .top-bar, .top-bar-add, .light-01, .light-02, .light-03, .light-04, .light-05
+                background-color: $gray
+                border: 1px solid $primary
+                position: absolute
+                display: flex
+                justify-content: center
+                align-items: center
+                cursor: pointer
+                transition: 150ms
+                &:hover
+                    background-color: darken($gray, 5%)
+
+            .top-bar-add-img, .top-bar-img, .foot-img, .light-01-img, .light-02-img, .light-03-img, .light-04-img, .light-05-img
+                position: absolute
+                align-items: center
+                cursor: pointer
+                transition: 150ms
+                cursor: pointer
+
+            .foot, .foot-img
+                height: 435px
+                width: 50px
+                bottom: 0
+                left: 50%
+                transform: translateX(-50%)
+
+            .top-bar-add, .top-bar-add-img
+                width: 410px
+                height: 65px
+                left: 50%
+                transform: translateX(-50%)
+
+            .top-bar, .top-bar-img
+                top: 4rem
+                height: 73px
+                width: 510px
+                left: 50%
+                transform: translateX(-50%)
+                z-index: 100
+
+            .lights
+                position: absolute
+                top: 8.5rem
+                display: flex
+                width: 100%
+                left: 50%
+                transform: translateX(-50%)
+                justify-content: space-around
+                z-index: 10
+                div, img
+                    position: relative
+                    height: 110px
+                    width: 65px  
+        
+        .right-1
+            position: relative
+            overflow: hidden
+            width: 48% 
+            .other-category
+                position: absolute
+                display: flex
+                flex-direction: column
+                gap: .5rem
+                cursor: pointer
+                left: 50%
+                top: 50%
+                transform: translate(-50%, -50%)
+                color: $primary
+                font-weight: $bold
+                &:hover
+                    text-decoration: underline
+            .other-category-img
+                cursor: pointer
+                position: absolute
+                top: 50%
+                left: 50%
+                transform: translate(-50%, -50%)
+
+
+    .save-btn
+        font-size: 1.2rem
+        padding: 1rem
+        background: $primary
+        color: $white
+        border-radius: 50%
+        transition: 150ms
+        position: absolute
+        right: 0
+        bottom: 0
+        &:hover
+            background-color: darken($primary, 5%)
+            cursor: pointer
+    #missing
+        background-color: lighten($red, 30%)
+    #bar-missing
+        background-color: lighten($red, 30%)
+        border-color: $red
+        &:hover
+            background-color: lighten($red, 25%)
+    #other-category-missing
+        color: $red

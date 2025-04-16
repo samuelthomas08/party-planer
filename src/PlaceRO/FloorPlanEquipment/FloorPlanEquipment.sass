@@ -1,0 +1,157 @@
+@import '../../_basic'
+
+.FloorPlanEquipment
+    .description
+        text-align: center
+    .equipment-slider
+        position: relative
+        display: flex
+        align-items: center
+        gap: 1rem
+        .slider-icon
+            font-size: 1.5rem
+            cursor: pointer
+            transition: 150ms
+            &:hover
+                color: $primary
+        .card
+            width: 100%
+            display: flex
+            flex-direction: column
+            gap: 2rem
+            .equipment-item-other-cat
+                height: 30rem
+                border-radius: 1rem
+                display: flex
+                flex-direction: column
+                gap: 1rem
+                h3
+                    text-align: center
+                .img-container-other-cat
+                    display: flex
+                    justify-content: center
+                    img
+                        width: 25rem
+
+            .equipment-item
+                width: 100%
+                position: relative
+                height: 38rem
+                border-radius: 1rem
+                display: flex
+                flex-direction: column
+                gap: 1rem
+                h3
+                    text-align: center
+                .img-container
+                    position: relative
+                    .top-bar-add, .foot, .top-bar
+                        position: absolute
+
+                    .foot
+                        height: 435px
+                        width: 140px
+                        top: 203px
+                        left: 50%
+                        transform: translate(-50%, -65px)
+
+                    .top-bar-add
+                        width: 410px
+                        height: 65px
+                        top: 0
+                        left: 50%
+                        transform: translateX(-50%)
+
+                    .top-bar
+                        top: 65px
+                        height: 73px
+                        width: 510px
+                        left: 50%
+                        transform: translateX(-50%)
+                        z-index: 100
+
+                    .lights
+                        position: absolute
+                        top: 138px
+                        display: flex
+                        width: 510px
+                        left: 50%
+                        transform: translateX(-50%)
+                        justify-content: space-around
+                        z-index: 10
+                        .light, img
+                            position: relative
+                            height: 110px
+                            width: 90px
+                        .light-container
+                            display: flex
+    .color-selection
+        margin-top: 2rem
+        display: flex
+        align-items: center
+        justify-content: center
+        gap: 1rem
+        position: relative
+        label
+            display: flex
+            align-items: center
+            gap: 1rem
+            pointer-events: none
+        .disable-color
+            pointer-events: none
+            .color-represent
+                pointer-events: none
+        .color-select-container
+            display: flex
+            input
+                height: 2rem
+                padding: .8rem
+                height: 2rem
+                width: 10rem
+                border-radius: 10px 0 0 10px
+                border: none
+                background: $gray
+                outline: none
+            .color-represent
+                height: 2rem
+                width: 2rem
+                border-radius: 0 10px 10px 0
+                pointer-events: all
+    .btn-save
+        padding: .8rem
+        width: 100%
+        margin-top: 5rem
+        font-size: 1rem
+        display: flex
+        justify-content: center
+        align-items: center
+        gap: .5rem
+        border-radius: 1rem
+        border: none
+        background-color: $primary
+        color: $white
+        cursor: pointer
+        transition: 150ms
+        &:hover
+            background-color: darken($primary, 5%)
+    .disable-save
+        display: none
+    .btn-edit
+        padding: .8rem
+        width: 100%
+        margin-top: 5rem
+        font-size: 1rem
+        display: flex
+        justify-content: center
+        align-items: center
+        gap: .5rem
+        border-radius: 1rem
+        border: none
+        background-color: $primary
+        color: $white
+        cursor: pointer
+        transition: 150ms
+        &:hover
+            background-color: darken($primary, 5%)
+    .disable-edit
+        display: none

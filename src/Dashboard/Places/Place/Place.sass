@@ -1,0 +1,23 @@
+@import '../../../_basic'
+
+.Place
+    background-color: $gray
+    width: 100%
+    padding: 1rem 1.5rem 1rem 1.5rem
+    border-radius: 1rem
+    display: flex
+    justify-content: space-between
+    align-items: center
+    h1
+        font-size: 1.5rem
+    .right
+        display: flex
+        gap: 1.5rem
+        .icon
+            cursor: pointer
+            transition: 150ms
+            font-size: 1.2rem
+            &:hover
+                color: $primary
+        .delete:hover
+            color: $red

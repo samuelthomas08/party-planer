@@ -1,0 +1,26 @@
+@import '../../_basic'
+
+.Places
+    width: 30rem
+    position: relative
+    .places
+        padding: 6px 0 6px 0
+        margin-top: 2rem
+        display: flex
+        flex-direction: column
+        gap: 1.5rem
+    .create-new-place-btn
+        padding: 1rem
+        background-color: $primary
+        color: $white
+        border: none
+        border-radius: 1rem
+        font-size: 1rem
+        font-weight: $bold
+        cursor: pointer
+        transition: 150ms
+        width: 100%
+        position: absolute
+        bottom: 0
+        &:hover
+            background-color: darken($primary, 5%)

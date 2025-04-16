@@ -1,0 +1,36 @@
+@import '../../_basic'
+
+.Equipment
+    .contents
+        margin-top: 2rem
+        width: 70rem
+        display: grid
+        grid-template-columns: repeat(3, 20rem)
+        max-height: calc(2 * 25rem + 2rem + 12px)
+        gap: 2rem
+        overflow-y: auto
+        padding: 6px 0 6px 0
+        @media screen and (max-width: 1920px)
+            max-height: calc(25rem + 2rem + 12px)
+
+        .new-equipment-link
+            text-decoration: none
+
+        .new-equipment
+            background-color: $primary
+            color: $white
+            height: 25rem
+            width: 20rem
+            border-radius: 1rem
+            display: flex
+            flex-direction: column
+            justify-content: center
+            gap: 2rem
+            align-items: center
+            padding: 2rem
+            transition: 150ms
+            &:hover
+                transform: translateY(-6px)
+                cursor: pointer
+            .icon
+                font-size: 5rem
