@@ -8,3 +8,9 @@
         top: 50%
         left: 50%
         transform: translate(-50%, -50%)
+        @media screen and (max-width: 1400px)
+            flex-direction: column
+            gap: 5rem
+        @media screen and (max-height: 1000px) and (max-width: 1400px)
+            top: 6rem
+            transform: translate(-50%, 0)
