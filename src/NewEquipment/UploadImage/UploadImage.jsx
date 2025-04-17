@@ -28,7 +28,7 @@ const UploadImage = ({ setUpload, setBlur, img, setImg, category }) => {
         const file = imgUploadRef.current.files[0];
 
         if(file) {
-            if(file.name.split('.').pop() == 'jpg' || file.name.split('.').pop() == 'png' || file.name.split('.').pop() == 'jpeg') {
+            if(file.name.split('.').pop() == 'jpg' || file.name.split('.').pop() == 'png' || file.name.split('.').pop() == 'jpeg' || file.name.split('.').pop() == 'webp') {
                 const reader = new FileReader();
 
                 const options = {
@@ -75,7 +75,7 @@ const UploadImage = ({ setUpload, setBlur, img, setImg, category }) => {
                 <label htmlFor="img-upload"><FontAwesomeIcon icon={faArrowUpFromBracket} /><p>Bild hochladen</p></label>
                 <input ref={imgUploadRef} onChange={handleFileUpload} type="file" name="" id="img-upload" />
 
-                {uploadFail ? <p className='upload-fail-text'>Die hochgeladene Datei hat keinen unterstützen Dateitypen (.jpg, .png)</p> : null}
+                {uploadFail ? <p className='upload-fail-text'>Die hochgeladene Datei hat keinen unterstützen Dateitypen (.jpg, .png, .webp)</p> : null}
                 {imgName != '' ? <p className='img-name'>{imgName}</p> : null}
                 {imgSrc != '' ? <img className='img' src={imgSrc} /> : null}
             </form>
