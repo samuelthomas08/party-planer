@@ -81,6 +81,7 @@ const NewPlace = () => {
 
         if(file) {
             if(file.name.split('.').pop() == 'png') {
+                setUploadFail(false);
                 const reader = new FileReader();
 
                 const options = {
@@ -99,10 +100,10 @@ const NewPlace = () => {
                 }
             } else {
                 setUploadFail(true);
-                setImgSrc(null);
-                setImgName(null);
                 setSaveDisabled(true);
             }
+        } else {
+            setUploadFail(true);
         }        
     }
 
@@ -213,6 +214,7 @@ const NewPlace = () => {
                 <div className='layout'>
                     {imgSrc == '' ? <div className="img-upload">
                         <label htmlFor="img-upload"><FontAwesomeIcon icon={faArrowUpFromBracket} /><p>Bild einfügen</p></label>
+                        {uploadFail ? <p className='upload-fail-text'>Die hochgeladene Datei hat keinen unterstützen Dateitypen (.png)</p> : null}
                         <input ref={layoutImgRef} onChange={handleFileUpload} type="file" name="" id="img-upload" />
                     </div> : <div>   
                         <img ref={floorPlanRef} src={imgSrc} className="floor-plan-img"  />
