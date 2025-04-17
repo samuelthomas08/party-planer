@@ -1,6 +1,11 @@
 @import '../../_basic'
 
 .EditFloorPlanEquipment
+    overflow-y: scroll
+    max-height: 1020px
+    @media screen and (max-height: 1200px)
+        height: calc( 82vh - 2rem )
+        padding-bottom: 2rem 
     .head
         display: flex
         align-items: center
