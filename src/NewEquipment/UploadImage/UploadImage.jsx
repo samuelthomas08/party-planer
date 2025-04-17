@@ -28,7 +28,7 @@ const UploadImage = ({ setUpload, setBlur, img, setImg, category }) => {
         const file = imgUploadRef.current.files[0];
 
         if(file) {
-            if(file.name.split('.').pop() == 'jpg' || file.name.split('.').pop() == 'png' || file.name.split('.').pop() == 'jpeg') {
+            if(file.name.split('.').pop() == 'jpg' || file.name.split('.').pop() == 'png' || file.name.split('.').pop() == 'jpeg' || file.name.split('.').pop() == 'webp') {
                 const reader = new FileReader();
 
                 const options = {
