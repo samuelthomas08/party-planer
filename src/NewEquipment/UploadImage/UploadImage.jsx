@@ -75,7 +75,7 @@ const UploadImage = ({ setUpload, setBlur, img, setImg, category }) => {
                 <label htmlFor="img-upload"><FontAwesomeIcon icon={faArrowUpFromBracket} /><p>Bild hochladen</p></label>
                 <input ref={imgUploadRef} onChange={handleFileUpload} type="file" name="" id="img-upload" />
 
-                {uploadFail ? <p className='upload-fail-text'>Die hochgeladene Datei hat keinen unterstützen Dateitypen (.jpg, .png)</p> : null}
+                {uploadFail ? <p className='upload-fail-text'>Die hochgeladene Datei hat keinen unterstützen Dateitypen (.jpg, .png, .webp)</p> : null}
                 {imgName != '' ? <p className='img-name'>{imgName}</p> : null}
                 {imgSrc != '' ? <img className='img' src={imgSrc} /> : null}
             </form>
