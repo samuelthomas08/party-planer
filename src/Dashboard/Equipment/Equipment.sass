@@ -3,13 +3,14 @@
 .Equipment
     .contents
         margin-top: 2rem
-        width: 70rem
-        display: grid
-        grid-template-columns: repeat(3, 20rem)
-        max-height: calc(2 * 25rem + 2rem + 12px)
-        gap: 2rem
         overflow-y: auto
-        padding: 6px 0 6px 0
+        padding-top: 6px
+        display: grid
+        grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr))
+        gap: 2rem
+
+        max-width: calc(3 * 20rem + 2 * 2rem) // Maximal 3 Spalten + 2 Gaps
+        width: 100%
         @media screen and (max-width: 1920px)
             max-height: calc(25rem + 2rem + 12px)
 
