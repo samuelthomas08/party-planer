@@ -12,10 +12,10 @@ import { doc, getDoc, query, setDoc } from 'firebase/firestore';
 import { useNavigate, useParams } from 'react-router-dom';
 import { db } from '../firebase/firebase';
 import FloorPlanEquipment from './FloorPlanEquipment/FloorPlanEquipment';
+import FloorPlanEquipmentModal from './FloorPlanEquipmentModal/FloorPlanEquipmentModal';
 
 
 const PlaceRO = () => {
-    const containerRef = useRef();
     const floorPlanRef = useRef();
     const { id } = useParams();
 
@@ -24,6 +24,8 @@ const PlaceRO = () => {
     const [floorPlan, setFloorPlan] = useState();
     const [imgSrc, setImgSrc] = useState('');
     const [equipmentPlacements, setEquipmentPlacements] = useState();
+
+    const [mobileModalShow, setMobileModalShow] = useState(false);
 
     useEffect(() => {
         const fetchFloorPlan = async () => {
@@ -62,15 +64,21 @@ const PlaceRO = () => {
         });
     
         setEquipmentPlacements(tempPlaces);
+        setMobileModalShow(true);
     }
 
-    return (
+    return floorPlan ? (
         <div className="PlaceRO">
-            {floorPlan ? <div>
+            <Header pageName={floorPlan.name} />
+            
+            {!equipmentPlacements.every(({ showOptions }) => !showOptions) ? equipmentPlacements.map(equipment => {
+                return <FloorPlanEquipmentModal setMobileModalShow={setMobileModalShow} data={equipment}/>
+            }) : null}
 
-                <Header pageName={floorPlan.name} />
+            {mobileModalShow ? <div className='blur'></div> : null}
 
-                <div className="bottom-container">
+            <main>
+                <div className="bottom-container" style={floorPlanRef.current ? {height: floorPlanRef.current.getBoundingClientRect().height} : null}>
                     <div className='layout'>
                         <div>
                             <img ref={floorPlanRef} src={imgSrc} className="floor-plan-img" onLoad={() => setEquipmentContainerLoaded(true)}  />
@@ -83,7 +91,7 @@ const PlaceRO = () => {
                                 top: '50%',
                                 transform: 'translate(-50%, -50%)',
                                 zIndex: 200
-                            }} ref={containerRef}>                    
+                            }}>                    
                                 {equipmentPlacements.map(equipment => {
                                     const rect = floorPlanRef.current.getBoundingClientRect();
                                     const absoluteX = equipment.x * rect.width;
@@ -96,8 +104,6 @@ const PlaceRO = () => {
                                             onClick={equipmentClickEvent}
                                             style={{
                                                 position: 'absolute',
-                                                height: '2vw',
-                                                width: '2vw',
                                                 borderRadius: '100%',
                                                 background: equipment.data.color,
                                                 left: absoluteX - 24,
@@ -116,7 +122,7 @@ const PlaceRO = () => {
                     {equipmentPlacements ? <div className="layout-item-select">
                         <div className='current-selection'>
                             {!equipmentPlacements.every(({ showOptions }) => !showOptions) ? equipmentPlacements.map(equipment => {
-                                return <FloorPlanEquipment data={equipment}/>
+                                return <FloorPlanEquipment setMobileModalShow={setMobileModalShow} data={equipment}/>
                             }) : 
                             <div className='no-selection'>
                                 <h1>Auswahl</h1>
@@ -128,11 +134,11 @@ const PlaceRO = () => {
                 </div>
 
                 
-            </div> : null}
+            </main>
 
             <Footer />
         </div>
-    )
+    ) : null;
 }
 
 export default PlaceRO;
