@@ -3,9 +3,6 @@ import { useEffect, useRef, useState } from 'react';
 import './FloorPlanEquipment.sass';
 import { db } from '../../firebase/firebase';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretRight, faEdit, faFloppyDisk, faTrashCan } from '@fortawesome/free-solid-svg-icons';
-
 import { collection, getDocs, query } from 'firebase/firestore';
 
 
@@ -14,11 +11,6 @@ const FloorPlanEquipment = ({ data }) => {
     const [color, setColor] = useState(data.data.color);
 
     const selectedCategory = data.data.category;
-
-    const [equipmentList, setEquipmentList] = useState([]);
-    const [otherEquipmentList, setOtherEquipmentList] = useState([]);
-
-    const [disableSave, setDisableSave] = useState(false);
 
     const [currentEquipmentSelection, setCurrentEquipmentSelection] = useState(0);
 
