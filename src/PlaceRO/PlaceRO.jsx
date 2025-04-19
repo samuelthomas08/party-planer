@@ -4,12 +4,8 @@ import './PlaceRO.sass';
 import Footer from '../Footer/Footer';
 import Header from '../Header/Header';
 
-import { faArrowUpFromBracket, faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
-import { uid } from 'uid';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import imageCompression from "browser-image-compression";
 import { doc, getDoc, query, setDoc } from 'firebase/firestore';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { db } from '../firebase/firebase';
 import FloorPlanEquipment from './FloorPlanEquipment/FloorPlanEquipment';
 import FloorPlanEquipmentModal from './FloorPlanEquipmentModal/FloorPlanEquipmentModal';

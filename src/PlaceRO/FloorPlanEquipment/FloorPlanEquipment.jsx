@@ -3,9 +3,6 @@ import { useEffect, useRef, useState } from 'react';
 import './FloorPlanEquipment.sass';
 import { db } from '../../firebase/firebase';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretRight, faEdit, faFloppyDisk, faTrashCan } from '@fortawesome/free-solid-svg-icons';
-
 import { collection, getDocs, query } from 'firebase/firestore';
 
 
