@@ -11,11 +11,6 @@ const FloorPlanEquipmentModal = ({ data, setMobileModalShow }) => {
 
     const selectedCategory = data.data.category;
 
-    const [equipmentList, setEquipmentList] = useState([]);
-    const [otherEquipmentList, setOtherEquipmentList] = useState([]);
-
-    const [disableSave, setDisableSave] = useState(false);
-
     const [currentEquipmentSelection, setCurrentEquipmentSelection] = useState(0);
 
     useEffect(() => {
