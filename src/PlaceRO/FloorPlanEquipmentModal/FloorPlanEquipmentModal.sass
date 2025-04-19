@@ -1,0 +1,114 @@
+@import '../../_basic'
+
+.FloorPlanEquipmentModal
+    position: absolute
+    background: $white
+    z-index: 200
+    left: 50%
+    top: 50%
+    transform: translate(-50%, -50%)
+    padding: 2rem
+    height: 75vh
+    border-radius: 1rem
+    flex-direction: column
+    justify-content: space-between
+    @media screen and (min-width: 1900px)
+        display: none !important
+    @media screen and (max-height: 930px)
+        height: 85vh
+    @media screen and (max-height: 820px)
+        height: 95vh
+    .close-icon
+        position: absolute
+        top: 2rem
+        right: 2rem
+        font-size: 1.3rem
+        cursor: pointer
+        z-index: 200
+    .equipment-item-other-cat
+        display: flex
+        justify-content: center
+        flex-direction: column
+        .img-container-other-cat, .img-container
+            img
+                max-height: 45vh
+                margin-top: 1rem
+    .equipment-item
+        width: 100%
+        position: relative
+        height: 32rem
+        border-radius: 1rem
+        display: flex
+        flex-direction: column
+        gap: 1rem
+        h3
+            text-align: center
+        .img-container
+            position: relative
+            transform: scale(0.8)
+            .top-bar-add, .foot, .top-bar
+                position: absolute
+
+            .foot
+                height: 435px
+                width: 140px
+                top: 203px
+                left: 50%
+                transform: translate(-50%, -65px)
+
+            .top-bar-add
+                width: 410px
+                height: 65px
+                top: 0
+                left: 50%
+                transform: translateX(-50%)
+
+            .top-bar
+                top: 65px
+                height: 73px
+                width: 510px
+                left: 50%
+                transform: translateX(-50%)
+                z-index: 100
+
+            .lights
+                position: absolute
+                top: 138px
+                display: flex
+                width: 510px
+                left: 50%
+                transform: translateX(-50%)
+                justify-content: space-around
+                z-index: 10
+                .light, img
+                    position: relative
+                    height: 110px
+                    width: 90px
+                .light-container
+                    display: flex
+
+    .color-selection
+            gap: 1rem
+            position: relative
+            display: flex
+            label
+                display: flex
+                align-items: center
+                gap: 1rem
+            .color-select-container
+                display: flex
+                input
+                    height: 2rem
+                    padding: .8rem
+                    height: 2rem
+                    width: 10rem
+                    border-radius: 10px 0 0 10px
+                    border: none
+                    background: $gray
+                    outline: none
+                .color-represent
+                    height: 2rem
+                    width: 2rem
+                    border-radius: 0 10px 10px 0
+                    pointer-events: all
+        
