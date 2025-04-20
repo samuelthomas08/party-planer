@@ -6,9 +6,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFloppyDisk, faPlus, faArrowUpFromBracket, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import UploadImage from './UploadImage/UploadImage';
 import { db } from '../firebase/firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, query, setDoc } from 'firebase/firestore';
 import { uid } from 'uid';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 const UpdateEquipment = () => {
 
@@ -64,6 +64,37 @@ const UpdateEquipment = () => {
     const [otherCategoryMissing, setOtherCategoryMissing] = useState(false);
 
     const showOtherCategory = otherCategoryData.img != null && otherCategoryData.imgName != null;
+    
+    const id = useParams().id;
+
+    useEffect(() => {
+
+        const fetchData = async () => {
+            const q = query(doc(db, 'equipment', id));
+            
+            const querySnapshot = await getDoc(doc(db, 'equipment', id));
+
+            console.log(querySnapshot.data());
+
+            descriptionRef.current.value = querySnapshot.data().description;
+            titleRef.current.value = querySnapshot.data().title;
+
+            setSelectedCategory(querySnapshot.data().category);
+
+            if(querySnapshot.data().category == 0) {
+                setTopBarAddData({img: querySnapshot.data().contents.topBarAdd, imgName: 'topBarAdd'});
+                setTopBarData({img: querySnapshot.data().contents.topBar, imgName: 'topBar'});
+                setFootData({img: querySnapshot.data().contents.foot, imgName: 'foot'});
+                setLight01Data({img: querySnapshot.data().contents.light01, imgName: 'light01'});
+                setLight02Data({img: querySnapshot.data().contents.light02, imgName: 'light02'});
+                setLight03Data({img: querySnapshot.data().contents.light03, imgName: 'light03'});
+                setLight04Data({img: querySnapshot.data().contents.light04, imgName: 'light04'});
+                setLight05Data({img: querySnapshot.data().contents.light05, imgName: 'light05'});
+            }
+        }
+
+        fetchData();
+    }, [])
 
     const checkFilledForm = () => {
         let statement = false;
@@ -99,7 +130,7 @@ const UpdateEquipment = () => {
         }
     }
 
-    const saveNewEquipment = async () => {
+    const saveUpdatedEquipment = async () => {
         
         let dbEntryTitle = titleRef.current.value.toLowerCase();
         dbEntryTitle = dbEntryTitle.replace('ä', 'ae');
@@ -199,7 +230,7 @@ const UpdateEquipment = () => {
                         </div>}
                     </div>
 
-                    <FontAwesomeIcon onClick={saveNewEquipment} className='save-btn' icon={faFloppyDisk} type='submit' />
+                    <FontAwesomeIcon onClick={saveUpdatedEquipment} className='save-btn' icon={faFloppyDisk} type='submit' />
                 </div>
 
                 
