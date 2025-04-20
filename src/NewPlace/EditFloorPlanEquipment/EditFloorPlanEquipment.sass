@@ -1,7 +1,8 @@
 @import '../../_basic'
 
 .EditFloorPlanEquipment
-    overflow-y: scroll
+    overflow-y: auto
+    padding-right: 10px
     max-height: 1020px
     @media screen and (max-height: 1200px)
         height: calc( 82vh - 2rem )
@@ -39,6 +40,7 @@
     .description
         margin-top: 2rem
         max-height: 10rem
+        max-width: 20rem
         overflow-y: auto
     .equipment-slider
         display: flex
