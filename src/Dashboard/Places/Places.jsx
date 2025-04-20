@@ -26,10 +26,12 @@ const Places = () => {
 
     return (
         <div className="Places">
-            <h1>Party-Orte</h1>
+            <div>
+                <h1>Party-Orte</h1>
 
-            <div className="places">
-                {placeList.length == 0 ? <p>Du hast noch keine Orte eingespeichert...</p> : placeList.map(place => <Place placeList={placeList} setPlaceList={setPlaceList} title={place.name} placeId={place.nameId} />)}
+                <div className="places">
+                    {placeList.length == 0 ? <p>Du hast noch keine Orte eingespeichert...</p> : placeList.map(place => <Place placeList={placeList} setPlaceList={setPlaceList} title={place.name} placeId={place.nameId} />)}
+                </div>
             </div>
 
             <Link to='/new-place'><button className="create-new-place-btn"><FontAwesomeIcon icon={faPlus} /> Neuen Ort erstellen</button></Link>
