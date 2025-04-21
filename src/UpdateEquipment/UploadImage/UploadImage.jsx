@@ -1,7 +1,7 @@
 import './UploadImage.sass';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUpFromBracket, faClose, faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
+import { faArrowUpFromBracket, faClose, faFloppyDisk, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import imageCompression from "browser-image-compression";
 
 import { useEffect, useRef, useState } from 'react';
@@ -64,6 +64,11 @@ const UploadImage = ({ setUpload, setBlur, img, setImg }) => {
         handleCloseMenu();
     }
 
+    const handleClearEvent = () => {
+        setImgSrc(null);
+        setImgName(null);
+    }
+
     return (
         <div className="UploadImage">
             <div className="head">
@@ -71,14 +76,18 @@ const UploadImage = ({ setUpload, setBlur, img, setImg }) => {
                 <FontAwesomeIcon className='close' icon={faClose} onClick={handleCloseMenu} />
             </div>
 
-            <form action="get">
-                <label htmlFor="img-upload"><FontAwesomeIcon icon={faArrowUpFromBracket} /><p>Bild hochladen</p></label>
-                <input ref={imgUploadRef} onChange={handleFileUpload} type="file" name="" id="img-upload" />
+            <div className='form'>
+                <div className='options'>
+                    <label htmlFor="img-upload"><FontAwesomeIcon icon={faArrowUpFromBracket} /><p>Bild hochladen</p></label>
+                    <input ref={imgUploadRef} onChange={handleFileUpload} type="file" name="" id="img-upload" />
+
+                    {imgSrc != '' ? <button onClick={handleClearEvent} className="clear-img"><FontAwesomeIcon icon={faTrashCan} /></button> : null}
+                </div>
 
                 {uploadFail ? <p className='upload-fail-text'>Die hochgeladene Datei hat keinen unterstützen Dateitypen (.jpg, .png)</p> : null}
                 {imgName != '' ? <p className='img-name'>{imgName}</p> : null}
                 {imgSrc != '' ? <img className='img' src={imgSrc} /> : null}
-            </form>
+            </div>
 
             <button className={saveDisabled ? "btn-save disabled" : "btn-save"} onClick={!saveDisabled ? handleSaveEvent : null}><FontAwesomeIcon icon={faFloppyDisk} /> Speichern</button>
         </div>
