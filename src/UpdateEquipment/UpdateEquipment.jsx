@@ -6,16 +6,23 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFloppyDisk, faPlus, faArrowUpFromBracket, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import UploadImage from './UploadImage/UploadImage';
 import { db } from '../firebase/firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, query, setDoc, updateDoc } from 'firebase/firestore';
 import { uid } from 'uid';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 const UpdateEquipment = () => {
+
+    const [loaded, setLoaded] = useState(false);
 
     const navigate = useNavigate();
 
     const titleRef = useRef('');
     const descriptionRef = useRef('');
+
+    const [titleId, setTitleId] = useState('');
+
+    const [title, setTitle] = useState('');
+    const [desc, setDesc] = useState('');
 
     const [selectedCategory, setSelectedCategory] = useState(0);
     const [blur, setBlur] = useState(false);
@@ -64,6 +71,67 @@ const UpdateEquipment = () => {
     const [otherCategoryMissing, setOtherCategoryMissing] = useState(false);
 
     const showOtherCategory = otherCategoryData.img != null && otherCategoryData.imgName != null;
+    
+    const id = useParams().id;
+
+    useEffect(() => {
+
+        let data;
+
+        const fetchData = async () => {
+            const q = query(doc(db, 'equipment', id));
+            
+            const querySnapshot = await getDoc(doc(db, 'equipment', id));
+            data = querySnapshot.data(); 
+
+            setSelectedCategory(data.category);
+
+            if(data.category == 0) {
+                if(data.contents.topBarAdd) {
+                    setTopBarAddData({img: data.contents.topBarAdd, imgName: 'topBarAdd'});
+                }
+
+                if(data.contents.topBar) {
+                    setTopBarData({img: data.contents.topBar, imgName: 'topBar'});
+                }
+
+                if(data.contents.foot) {
+                    setFootData({img: data.contents.foot, imgName: 'foot'});
+                }
+
+                if(data.contents.light01) {
+                    setLight01Data({img: data.contents.light01, imgName: 'light01'});
+                }
+
+                if(data.contents.light02) {
+                    setLight02Data({img: data.contents.light02, imgName: 'light02'});
+                }
+
+                if(data.contents.light03) {
+                    setLight03Data({img: data.contents.light03, imgName: 'light03'});
+                }
+
+                if(data.contents.light04) {
+                    setLight04Data({img: data.contents.light04, imgName: 'light04'});
+                }
+
+                if(data.contents.light05) {
+                    setLight05Data({img: data.contents.light05, imgName: 'light05'});
+                }
+            }
+
+            setTitle(data.title);
+            setDesc(data.description);
+
+            console.log(data);
+
+            setTitleId(data.titleId);
+
+            setLoaded(true);
+        }
+
+        fetchData();
+    }, [])
 
     const checkFilledForm = () => {
         let statement = false;
@@ -99,14 +167,8 @@ const UpdateEquipment = () => {
         }
     }
 
-    const saveNewEquipment = async () => {
-        
-        let dbEntryTitle = titleRef.current.value.toLowerCase();
-        dbEntryTitle = dbEntryTitle.replace('ä', 'ae');
-        dbEntryTitle = dbEntryTitle.replace('ö', 'oe');
-        dbEntryTitle = dbEntryTitle.replace('ü', 'ue');
-        dbEntryTitle = dbEntryTitle.replace(' ', '_');
-        const titleId = dbEntryTitle + uid(12);
+    const saveUpdatedEquipment = async () => {
+
         if(selectedCategory == 0) {
             await setDoc(doc(db, "equipment", titleId), {
                 title: titleRef.current.value,
@@ -127,7 +189,7 @@ const UpdateEquipment = () => {
         } else if (selectedCategory == 1) {
             
 
-            await setDoc(doc(db, "equipment", titleId), {
+            await updateDoc(doc(db, "equipment", titleId), {
                 title: titleRef.current.value,
                 description: descriptionRef.current.value,
                 category: 1,
@@ -139,7 +201,7 @@ const UpdateEquipment = () => {
         }
     }
 
-    return (
+    return loaded ? (
         <div className="NewEquipment">
             {blur ? <div className='blur'></div> : null}
 
@@ -156,7 +218,7 @@ const UpdateEquipment = () => {
             {otherCategoryUpload ? <UploadImage setUpload={setOtherCategoryUpload} setBlur={setBlur} img={otherCategoryData} setImg={setOtherCategoryData} /> : null}
 
             <main>
-                <div className="head"><Link to={'/'}><FontAwesomeIcon className='back-to-dashboard' icon={faArrowLeft} /></Link><h1>Neues Equipment anlegen</h1></div>
+                <div className="head"><Link to={'/'}><FontAwesomeIcon className='back-to-dashboard' icon={faArrowLeft} /></Link><h1>Equipment bearbeiten</h1></div>
 
                 <div className="form">
                     <div className="left">
@@ -167,28 +229,27 @@ const UpdateEquipment = () => {
                         </div>
 
                         <h3>Name</h3>
-                        <input className='equipment-name' id={titleRefMissing ? 'missing' : null} ref={titleRef} type="text" placeholder='Name des Equipments...' required />
+                        <input value={title} onChange={e => setTitle(e.currentTarget.value)} className='equipment-name' id={titleRefMissing ? 'missing' : null} ref={titleRef} type="text" placeholder='Name des Equipments...' required />
 
                         <h3>Beschreibung</h3>
-                        <textarea className='equipment-description' ref={descriptionRef} placeholder='Text der Beschreibung...'></textarea>
+                        <textarea value={desc} onChange={e => setDesc(e.currentTarget.value)} className='equipment-description' ref={descriptionRef} placeholder='Text der Beschreibung...'></textarea>
                     </div>
                     <div className={selectedCategory == 0 ? "right-0" : "right invisible"}>
-                        {showTopBarAdd ? <img className='top-bar-add-img' src={topBarAddData.img} onClick={() => setTopBarAddUpload(true)} /> : <div className="top-bar-add" id={topBarAddMissing ? 'bar-missing' : null} title='Top Bar Add' onClick={() => setTopBarAddUpload(true)}><FontAwesomeIcon icon={faPlus} /></div>}
-                        
+                        {topBarAddData ? (showTopBarAdd ? <img className='top-bar-add-img' src={topBarAddData.img} onClick={() => setTopBarAddUpload(true)} /> : <div className="top-bar-add" id={topBarAddMissing ? 'bar-missing' : null} title='Top Bar Add' onClick={() => setTopBarAddUpload(true)}><FontAwesomeIcon icon={faPlus} /></div>) : null}
                         {showTopBar ? <img className='top-bar-img' src={topBarData.img} onClick={() => setTopBarUpload(true)} /> : <div className="top-bar" id={topBarMissing ? 'bar-missing' : null} title='Top Bar' onClick={() => setTopBarUpload(true)}><FontAwesomeIcon icon={faPlus} /></div>}                       
-                        
                         {showFoot ? <img className='foot-img' src={footData.img} onClick={() => setFootUpload(true)} /> : <div className="foot" title='Foot' id={footMissing ? 'bar-missing' : null} onClick={() => setFootUpload(true)}><FontAwesomeIcon icon={faPlus} /></div>  }      
 
                         <div className="lights">
-                            {showLight01 ? <img className='light-01-img' src={light01Data.img} onClick={() => setLight01Upload(true)} /> : <div id={light01Missing ? 'bar-missing' : null} className="light-01" title='Light 01' onClick={() => setLight01Upload(true)}><FontAwesomeIcon icon={faPlus} /></div>}
-                            
-                            {showLight02 ? <img className='light-02-img' src={light02Data.img} onClick={() => setLight02Upload(true)} />: <div id={light02Missing ? 'bar-missing' : null} className="light-02" title='Light 02' onClick={() => setLight02Upload(true)}><FontAwesomeIcon icon={faPlus} /></div>}
-                            
-                            {showLight03 ? <img className='light-03-img' src={light03Data.img} onClick={() => setLight03Upload(true)} /> : <div id={light03Missing ? 'bar-missing' : null} className="light-03" title='Light 03' onClick={() => setLight03Upload(true)}><FontAwesomeIcon icon={faPlus} /></div>}
-                            
-                            {showLight04 ? <img className='light-04-img' src={light04Data.img} onClick={() => setLight04Upload(true)} /> : <div id={light04Missing ? 'bar-missing' : null} className="light-04" title='Light 04' onClick={() => setLight04Upload(true)}><FontAwesomeIcon icon={faPlus} /></div>}                      
+                            <div className="light-container">
+                                {showLight01 ? <img className='light-01-img' src={light01Data.img} onClick={() => setLight01Upload(true)} /> : <div id={light01Missing ? 'bar-missing' : null} className="light-01 light" title='Light 01' onClick={() => setLight01Upload(true)}><FontAwesomeIcon icon={faPlus} /></div>}
+                                {showLight02 ? <img className='light-02-img' src={light02Data.img} onClick={() => setLight02Upload(true)} />: <div id={light02Missing ? 'bar-missing' : null} className="light-02 light" title='Light 02' onClick={() => setLight02Upload(true)}><FontAwesomeIcon icon={faPlus} /></div>}
 
-                            {showLight05 ? <img className='light-05-img' src={light05Data.img} onClick={() => setLight05Upload(true)} /> : <div id={light05Missing ? 'bar-missing' : null} className="light-05" title='Light 05' onClick={() => setLight05Upload(true)}><FontAwesomeIcon icon={faPlus} /></div>}
+                            </div>
+                            {showLight03 ? <img className='light-03-img' src={light03Data.img} onClick={() => setLight03Upload(true)} /> : <div id={light03Missing ? 'bar-missing' : null} className="light-03 light" title='Light 03' onClick={() => setLight03Upload(true)}><FontAwesomeIcon icon={faPlus} /></div>}
+                            <div className="light-container">
+                                {showLight04 ? <img className='light-04-img' src={light04Data.img} onClick={() => setLight04Upload(true)} /> : <div id={light04Missing ? 'bar-missing' : null} className="light-04 light" title='Light 04' onClick={() => setLight04Upload(true)}><FontAwesomeIcon icon={faPlus} /></div>}                    
+                                {showLight05 ? <img className='light-05-img' src={light05Data.img} onClick={() => setLight05Upload(true)} /> : <div id={light05Missing ? 'bar-missing' : null} className="light-05 light" title='Light 05' onClick={() => setLight05Upload(true)}><FontAwesomeIcon icon={faPlus} /></div>}
+                            </div>
                         </div>
                     </div>
 
@@ -199,14 +260,14 @@ const UpdateEquipment = () => {
                         </div>}
                     </div>
 
-                    <FontAwesomeIcon onClick={saveNewEquipment} className='save-btn' icon={faFloppyDisk} type='submit' />
+                    <FontAwesomeIcon onClick={saveUpdatedEquipment} className='save-btn' icon={faFloppyDisk} type='submit' />
                 </div>
 
                 
             </main>
             
         </div>
-    );
+    ) : null;
 };
 
 export default UpdateEquipment;

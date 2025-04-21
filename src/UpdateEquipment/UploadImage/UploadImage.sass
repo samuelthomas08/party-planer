@@ -18,7 +18,10 @@
         .close
             font-size: 1.5rem
             cursor: pointer
-    form
+    .options
+        display: flex
+        gap: 1rem
+    .form
         margin-top: 2rem
         input[type="file"]
             display: none
@@ -35,6 +38,18 @@
             transition: 150ms
             &:hover
                 background-color: darken($gray, 3%)
+    .clear-img
+        height: 3rem
+        width: 3rem
+        background: $red
+        font-size: 1.2rem
+        color: $white
+        border: none
+        border-radius: 1rem
+        cursor: pointer
+        transition: 150ms
+        &:hover
+            background-color: darken($red, 8%)
     .img-name
         margin-top: 1.5rem
     .img

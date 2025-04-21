@@ -1,12 +1,15 @@
 import './EquipmentItem.sass';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenToSquare, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faPenToSquare, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { db } from '../../../firebase/firebase';
 import { doc, deleteDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 
-const EquipmentItem = ({ title, imgs, category, titleId, equipmentList, setEquipmentList, description }) => {
+const EquipmentItem = ({ title, imgs, category, titleId, equipmentList, setEquipmentList }) => {
+
+    const navigate = useNavigate();
 
     const deleteEquipmentHandler = async () => {
         console.log(titleId);
@@ -16,11 +19,16 @@ const EquipmentItem = ({ title, imgs, category, titleId, equipmentList, setEquip
         setEquipmentList(equipmentList.filter(equipment => equipment.titleId !== titleId));
     }
 
+    const updateEquipmentHandler = () => {
+        navigate(`/update-equipment/${titleId}`);
+    }   
+
     return (
         <div>
             <div className="EquipmentItem">
                 <p className="category">{ category == 0 ? 'Ständer' : 'Anderes' }</p>
                 <FontAwesomeIcon onClick={deleteEquipmentHandler} className='delete' icon={faTrashAlt} />
+                <FontAwesomeIcon onClick={updateEquipmentHandler} className='edit' icon={faEdit} />
 
                 <div>
                     {category == 0 ? <div className="img-container">
