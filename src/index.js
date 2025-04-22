@@ -9,6 +9,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './_basic.sass';
 import NewEquipment from './NewEquipment/NewEquipment';
 import UpdateEquipment from './UpdateEquipment/UpdateEquipment';
+import UpdatePlace from './UpdatePlace/UpdatePlace';
 import NewPlace from './NewPlace/NewPlace';
 import PlaceRO from './PlaceRO/PlaceRO';
 
@@ -19,7 +20,8 @@ const router = createBrowserRouter([
   {path:"/new-equipment", element: <NewEquipment />},
   {path:"/update-equipment/:id", element: <UpdateEquipment />},
   {path:"/new-place", element: <NewPlace />},
-  {path:"/place/:id", element: <PlaceRO />}
+  {path:"/place/:id", element: <PlaceRO />},
+  {path:"/update-place/:id", element: <UpdatePlace />}
 ]);
 
 
