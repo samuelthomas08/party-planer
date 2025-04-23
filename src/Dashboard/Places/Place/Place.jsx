@@ -15,13 +15,17 @@ const Place = ({ title, placeId, placeList, setPlaceList }) => {
         setPlaceList(placeList.filter(place => place.id !== placeId));
     }
 
+    const updatePlaceHandler = () => {
+        navigate(`/update-place/${placeId}`);
+    }
+
     return (
         <div className="Place">
             <h1>{title}</h1>
 
             <div className="right">
                 <FontAwesomeIcon onClick={() => navigate('/place/' + placeId)} className='icon' icon={faShareFromSquare} />
-
+                <FontAwesomeIcon onClick={updatePlaceHandler} className='icon' icon={faEdit} />
                 <FontAwesomeIcon onClick={deletePlaceHandler} className='icon delete' icon={faTrashCan} />
             </div>
         </div>
