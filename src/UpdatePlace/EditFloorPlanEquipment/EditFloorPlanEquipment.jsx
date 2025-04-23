@@ -29,19 +29,37 @@ const EditFloorPlanEquipment = ({ handleEquipmentDeletion, data, setAbleToCreate
 
             const querySnapshot = await getDocs(q);
 
-            const data = querySnapshot.docs.map(el => ({ id: el.id, ...el.data() }));
+            const dbData = querySnapshot.docs.map(el => ({ id: el.id, ...el.data() }));
 
-            const equipment = data.filter(entry => entry.category === 0);
-            const otherEquipment = data.filter(entry => entry.category !== 0);
+            const equipment = dbData.filter(entry => entry.category === 0);
+            const otherEquipment = dbData.filter(entry => entry.category !== 0);
+
+            if(selectedCategory == 0) {
+                equipment.forEach((e, i) => {
+                    // console.log(e.id)
+                    if(e.id == data.data.selectedEquipment) {
+                        console.log('Aktuelle ermitteltes Equipment:')
+                        console.log(e.titleId);
+                        setCurrentEquipmentSelection(i);
+                    }
+                });
+
+            }
+
+            // console.log('Aktives Equipment ermittelt:');
+            // console.log(equipment);
+
+            console.log('Mitgelieferte Daten:')
+            console.log(data);
 
             setEquipmentList(equipment);
             setOtherEquipmentList(otherEquipment);
+
+            setDisableSave(true);
         };
 
         fetchData();   
-        
-        data.showOptions = true;
-    }, []);
+    }, [data]);
 
     const handleEquipmentSelection = () => {
         if(selectedCategory == 0) {

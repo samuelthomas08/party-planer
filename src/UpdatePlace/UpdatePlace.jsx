@@ -9,14 +9,16 @@ import { faArrowUpFromBracket, faFloppyDisk } from '@fortawesome/free-solid-svg-
 import { uid } from 'uid';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import imageCompression from "browser-image-compression";
-import { doc, setDoc } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom';
+import { doc, getDoc, query, setDoc } from 'firebase/firestore';
+import { useNavigate, useParams } from 'react-router-dom';
 import { db } from '../firebase/firebase';
 
 const UpdatePlace = () => {
     const layoutImgRef = useRef();
     const floorPlanRef = useRef();
     const nameRef = useRef();
+
+    const [placeTitle, setPlaceTitle] = useState('');
 
     const navigate = useNavigate();
 
@@ -34,7 +36,34 @@ const UpdatePlace = () => {
 
     const [equipmentPlacements, setEquipmentPlacements] = useState([]);
 
+    const [loadedEquipments, setLoadedEquipments] = useState(false);
+
+    let id = useParams().id;
+
     useEffect(() => {
+        let data;
+
+        const fetchData = async () => {
+            // console.log(id);
+
+            const q = query(doc(db, 'places', id));
+                        
+            const querySnapshot = await getDoc(doc(db, 'places', id));
+            data = querySnapshot.data(); 
+            setImgSrc(data.floorPlanImgSrc);
+            setImgName(data.floorPlanImgName);
+            setPlaceTitle(data.name);
+
+            const updatedEquipments = data.equipments.map(equipment => ({
+                ...equipment,
+                showOptions: false, // Nur einmalig setzen
+            }));
+    
+            setEquipmentPlacements(updatedEquipments);
+        }
+
+        fetchData();
+
         const handleKeyDown = (event) => {
             const isCreateNewShortcut = event.ctrlKey || event.metaKey;
 
@@ -57,6 +86,13 @@ const UpdatePlace = () => {
             window.removeEventListener('keyup', handleKeyUp);
         };
     }, []);
+
+    useEffect(() => {
+        if (equipmentPlacements.length > 0) {
+            console.log('Equipment Placements geladen:', equipmentPlacements);
+            setLoadedEquipments(true);
+        }
+    }, [equipmentPlacements]);
 
     const equipmentClickEvent = (e) => {
         let el;
@@ -149,29 +185,22 @@ const UpdatePlace = () => {
     }
 
     const saveNewEquipment = () => {
-        let dbEntryTitle = nameRef.current.value.toLowerCase();
-        dbEntryTitle = dbEntryTitle.replace('ä', 'ae');
-        dbEntryTitle = dbEntryTitle.replace('ö', 'oe');
-        dbEntryTitle = dbEntryTitle.replace('ü', 'ue');
-        dbEntryTitle = dbEntryTitle.replace(' ', '_');
-        const nameId = dbEntryTitle + uid(12);
-
-        const equipment = {
+         const equipment = {
             equipments: equipmentPlacements,
             floorPlanImgSrc: imgSrc,
             floorPlanImgName: imgName,
-            name: nameRef.current.value,
-            nameId: nameId
+            name: placeTitle,
+            nameId: id
         }
 
         console.log(equipment);
 
-        setDoc(doc(db, 'places', nameId), equipment).then(navigate('/'));
+        setDoc(doc(db, 'places', id), equipment).then(navigate('/'));
     }
 
     return (
         <div className="UpdatePlace">
-            <Header pageName={<input ref={nameRef} className='new-place-name' placeholder="Party-Ort" />} />
+            <Header pageName={<input value={placeTitle} onChange={e => setPlaceTitle(e.currentTarget.value)} className='new-place-name' placeholder="Party-Ort" />} />
 
             <div className="information-for-selected">
                 <div className="left">
@@ -228,7 +257,7 @@ const UpdatePlace = () => {
                             transform: 'translate(-50%, -50%)',
                             zIndex: 200
                         }}>                    
-                            {equipmentPlacements.map(equipment => {
+                            {loadedEquipments ? equipmentPlacements.map(equipment => {
                                 const rect = floorPlanRef.current.getBoundingClientRect(); // Aktuelle Größe des Bildes
                                 const absoluteX = equipment.x * rect.width; // Berechne absolute X-Koordinate
                                 const absoluteY = equipment.y * rect.height; // Berechne absolute Y-Koordinate
@@ -252,14 +281,14 @@ const UpdatePlace = () => {
                                         }}
                                     ></div>
                                 );
-                            })}
+                            }) : null}
                         </div>
                     </div>}
 
                 </div>
 
                 <div className="layout-item-select">
-                    {imgSrc != '' ? <div>
+                    {loadedEquipments ? <div>
                         {equipmentPlacements.map(equipment => <EditFloorPlanEquipment handleEquipmentDeletion={handleEquipmentDeletion} data={equipment} setAbleToCreate={setAbleToCreate} />)}    
                     </div> : <div>
                         <h1>Auswahl</h1>
@@ -271,7 +300,7 @@ const UpdatePlace = () => {
 
             <Footer />
         </div>
-    )
+    );
 }
 
 export default UpdatePlace;
