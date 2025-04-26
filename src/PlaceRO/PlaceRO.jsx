@@ -5,7 +5,7 @@ import Footer from '../Footer/Footer';
 import Header from '../Header/Header';
 
 import { doc, getDoc, query, setDoc } from 'firebase/firestore';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { db } from '../firebase/firebase';
 import FloorPlanEquipment from './FloorPlanEquipment/FloorPlanEquipment';
 import FloorPlanEquipmentModal from './FloorPlanEquipmentModal/FloorPlanEquipmentModal';
@@ -65,7 +65,14 @@ const PlaceRO = () => {
 
     return floorPlan ? (
         <div className="PlaceRO">
-            <Header pageName={floorPlan.name} />
+
+            <div className="place-ro-header">
+                <div className="left">
+                    <Link className='link' to='/'><h1 className='app-name'>Party Planer</h1></Link>
+                    <div className="bar"></div>
+                    <h1 className='page-name'>{ floorPlan.name }</h1>
+                </div>
+            </div>
             
             {!equipmentPlacements.every(({ showOptions }) => !showOptions) ? equipmentPlacements.map(equipment => {
                 return <FloorPlanEquipmentModal setMobileModalShow={setMobileModalShow} data={equipment}/>
