@@ -172,7 +172,7 @@ const UpdatePlace = () => {
                         id: uid(12),
                         x: relativeX, // Speichere relative X-Koordinate
                         y: relativeY, // Speichere relative Y-Koordinate
-                        showOptions: false,
+                        showOptions: true,
                         data: {
                             selectedEquipment: '',
                             category: 0,

@@ -46,16 +46,11 @@ const EditFloorPlanEquipment = ({ handleEquipmentDeletion, data, setAbleToCreate
 
             }
 
-            // console.log('Aktives Equipment ermittelt:');
-            // console.log(equipment);
-
             console.log('Mitgelieferte Daten:')
             console.log(data);
 
             setEquipmentList(equipment);
             setOtherEquipmentList(otherEquipment);
-
-            setDisableSave(true);
         };
 
         fetchData();   
