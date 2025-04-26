@@ -2,6 +2,11 @@
 
 .Equipment
     width: 100%
+    @media screen and (max-width: 1750px)
+        width: 60vw
+        margin-left: auto
+        margin-right: auto
+        margin-top: 2rem
     .contents
         margin-top: 2rem
         overflow-y: auto
@@ -12,10 +17,12 @@
         gap: 2rem
         max-width: calc(3 * 20rem + 3 * 2rem)
         max-height: calc(2 * 25rem + 2rem + 12px)
-        @media screen and (max-height: 1080px)
+        @media screen and (max-height: 1200px)
             max-height: calc(25rem + 2rem + 12px)
-        @media screen and (max-width: 1750px)
+        @media screen and (max-width: 2160px)
             max-width: calc(2 * 20rem + 2 * 2rem)
+        @media screen and (max-width: 1750px)
+            width: 100%
         .new-equipment-link
             text-decoration: none
 
