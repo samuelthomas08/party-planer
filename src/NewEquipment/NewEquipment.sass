@@ -79,7 +79,7 @@
             margin-top: 65px
             height: 42.5rem
             width: 40%        
-            .foot, .top-bar, .top-bar-add, .light-01, .light-02, .light-03, .light-04, .light-05
+            .foot, .top-bar, .top-bar-add-1, .top-bar-add-2, .light-01, .light-02, .light-03, .light-04, .light-05
                 background-color: $gray
                 border: 1px solid $primary
                 position: absolute
@@ -91,7 +91,7 @@
                 &:hover
                     background-color: darken($gray, 5%)
 
-            .top-bar-add-img, .top-bar-img, .foot-img, .light-01-img, .light-02-img, .light-03-img, .light-04-img, .light-05-img
+            .top-bar-img, .foot-img, .light-01-img, .light-02-img, .light-03-img, .light-04-img, .light-05-img
                 position: absolute
                 align-items: center
                 cursor: pointer
@@ -107,11 +107,22 @@
             .foot-img
                 width: 180px
 
-            .top-bar-add, .top-bar-add-img
+            .top-bar-add-container
                 width: 410px
                 height: 65px
                 left: 50%
                 transform: translateX(-50%)
+                position: absolute
+                display: flex
+                .top-bar-add-1, .top-bar-add-2
+                    position: relative
+                    width: 50%
+                    height: 100%
+                .top-bar-add-1
+                    border-right: none
+                img
+                    width: 50%
+                    cursor: pointer
 
             .top-bar, .top-bar-img
                 top: 4rem

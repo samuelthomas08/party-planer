@@ -21,7 +21,8 @@ const NewEquipment = () => {
     const [selectedCategory, setSelectedCategory] = useState(0);
     const [blur, setBlur] = useState(false);
 
-    const [topBarAddUpload, setTopBarAddUpload] = useState(false);
+    const [topBarAdd1Upload, setTopBarAdd1Upload] = useState(false);
+    const [topBarAdd2Upload, setTopBarAdd2Upload] = useState(false);
     const [topBarUpload, setTopBarUpload] = useState(false);
     const [footUpload, setFootUpload] = useState(false);
     const [light01Upload, setLight01Upload] = useState(false);
@@ -32,7 +33,8 @@ const NewEquipment = () => {
 
     const [otherCategoryUpload, setOtherCategoryUpload] = useState(false);
 
-    const [topBarAddData, setTopBarAddData] = useState({img: null, imgName: null});
+    const [topBarAdd1Data, setTopBarAdd1Data] = useState({img: null, imgName: null});
+    const [topBarAdd2Data, setTopBarAdd2Data] = useState({img: null, imgName: null});
     const [topBarData, setTopBarData] = useState({img: null, imgName: null});
     const [footData, setFootData] = useState({img: null, imgName: null});
     const [light01Data, setLight01Data] = useState({img: null, imgName: null});
@@ -43,7 +45,8 @@ const NewEquipment = () => {
 
     const [otherCategoryData, setOtherCategoryData] = useState({img: null, imgName: null});
 
-    const showTopBarAdd = topBarAddData.img != null && topBarAddData.imgName != null;
+    const showTopBarAdd1 = topBarAdd1Data.img != null && topBarAdd1Data.imgName != null;
+    const showTopBarAdd2 = topBarAdd2Data.img != null && topBarAdd2Data.imgName != null;
     const showTopBar = topBarData.img != null && topBarData.imgName != null;
     const showFoot = footData.img != null && footData.imgName != null;
     const showLight01 = light01Data.img != null && light01Data.imgName != null;
@@ -53,7 +56,8 @@ const NewEquipment = () => {
     const showLight05 = light05Data.img != null && light05Data.imgName != null;
 
     const [titleRefMissing, setTitleRefMissing] = useState(false);
-    const [topBarAddMissing, setTopBarAddMissing] = useState(false);
+    const [topBarAdd1Missing, setTopBarAdd1Missing] = useState(false);
+    const [topBarAdd2Missing, setTopBarAdd2Missing] = useState(false);
     const [topBarMissing, setTopBarMissing] = useState(false);
     const [footMissing, setFootMissing] = useState(false);
     const [light01Missing, setLight01Missing] = useState(false);
@@ -112,7 +116,8 @@ const NewEquipment = () => {
                 description: descriptionRef.current.value,
                 category: 0,
                 contents: {
-                    topBarAdd: topBarAddData.img,
+                    topBarAdd1: topBarAdd2Data.img,
+                    topBarAdd2: topBarAdd1Data.img,
                     topBar: topBarData.img,
                     foot: footData.img,
                     light01: light01Data.img,
@@ -142,7 +147,8 @@ const NewEquipment = () => {
 
             <Header pageName={'Neues Equipment'} />
 
-            {topBarAddUpload ? <UploadImage category={selectedCategory} setUpload={setTopBarAddUpload} setBlur={setBlur} img={topBarAddData} setImg={setTopBarAddData} /> : null}
+            {topBarAdd1Upload ? <UploadImage category={selectedCategory} setUpload={setTopBarAdd1Upload} setBlur={setBlur} img={topBarAdd1Data} setImg={setTopBarAdd1Data} /> : null}
+            {topBarAdd2Upload ? <UploadImage category={selectedCategory} setUpload={setTopBarAdd2Upload} setBlur={setBlur} img={topBarAdd2Data} setImg={setTopBarAdd2Data} /> : null}
             {topBarUpload ? <UploadImage category={selectedCategory} setUpload={setTopBarUpload} setBlur={setBlur} img={topBarData} setImg={setTopBarData} /> : null}
             {footUpload ? <UploadImage category={selectedCategory} setUpload={setFootUpload} setBlur={setBlur} img={footData} setImg={setFootData} /> : null}
             {light01Upload ? <UploadImage category={selectedCategory} setUpload={setLight01Upload} setBlur={setBlur} img={light01Data} setImg={setLight01Data} /> : null}
@@ -170,7 +176,11 @@ const NewEquipment = () => {
                         <textarea className='equipment-description' ref={descriptionRef} placeholder='Text der Beschreibung...'></textarea>
                     </div>
                     <div className={selectedCategory == 0 ? "right-0" : "right invisible"}>
-                        {showTopBarAdd ? <img className='top-bar-add-img' src={topBarAddData.img} onClick={() => setTopBarAddUpload(true)} /> : <div className="top-bar-add" id={topBarAddMissing ? 'bar-missing' : null} title='Top Bar Add' onClick={() => setTopBarAddUpload(true)}><FontAwesomeIcon icon={faPlus} /></div>}
+                        <div className="top-bar-add-container">
+                            {showTopBarAdd1 ? <img className='top-bar-add-1-img' src={topBarAdd1Data.img} onClick={() => setTopBarAdd1Upload(true)} /> : <div className="top-bar-add-1" id={topBarAdd1Missing ? 'bar-missing' : null} title='Top Bar Add 1' onClick={() => setTopBarAdd1Upload(true)}><FontAwesomeIcon icon={faPlus} /></div>}
+                            {showTopBarAdd2 ? <img className='top-bar-add-2-img' src={topBarAdd2Data.img} onClick={() => setTopBarAdd2Upload(true)} /> : <div className="top-bar-add-2" id={topBarAdd2Missing ? 'bar-missing' : null} title='Top Bar Add 2' onClick={() => setTopBarAdd2Upload(true)}><FontAwesomeIcon icon={faPlus} /></div>}
+                        </div>
+
                         {showTopBar ? <img className='top-bar-img' src={topBarData.img} onClick={() => setTopBarUpload(true)} /> : <div className="top-bar" id={topBarMissing ? 'bar-missing' : null} title='Top Bar' onClick={() => setTopBarUpload(true)}><FontAwesomeIcon icon={faPlus} /></div>}                       
                         {showFoot ? <img className='foot-img' src={footData.img} onClick={() => setFootUpload(true)} /> : <div className="foot" title='Foot' id={footMissing ? 'bar-missing' : null} onClick={() => setFootUpload(true)}><FontAwesomeIcon icon={faPlus} /></div>  }      
 

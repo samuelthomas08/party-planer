@@ -73,12 +73,76 @@
         .invisible
             display: none
 
+        // .right-0
+        //     position: relative
+        //     overflow: hidden
+        //     height: 42.5rem
+        //     width: 40%        
+        //     .foot, .top-bar, .top-bar-add, .light-01, .light-02, .light-03, .light-04, .light-05
+        //         background-color: $gray
+        //         border: 1px solid $primary
+        //         position: absolute
+        //         display: flex
+        //         justify-content: center
+        //         align-items: center
+        //         cursor: pointer
+        //         transition: 150ms
+        //         &:hover
+        //             background-color: darken($gray, 5%)
+
+        //     .top-bar-add-img, .top-bar-img, .foot-img, .light-01-img, .light-02-img, .light-03-img, .light-04-img, .light-05-img
+        //         position: absolute
+        //         align-items: center
+        //         cursor: pointer
+        //         transition: 150ms
+        //         cursor: pointer
+
+        //     .foot, .foot-img
+        //         height: 435px
+        //         width: 50px
+        //         bottom: 65px
+        //         left: 50%
+        //         transform: translateX(-50%)
+        //     .foot-img
+        //         width: 180px
+
+        //     .top-bar-add, .top-bar-add-img
+        //         width: 410px
+        //         height: 65px
+        //         left: 50%
+        //         transform: translateX(-50%)
+
+        //     .top-bar, .top-bar-img
+        //         top: 4rem
+        //         height: 73px
+        //         width: 510px
+        //         left: 50%
+        //         transform: translateX(-50%)
+        //         z-index: 100
+
+        //     .lights
+        //         position: absolute
+        //         top: 8.5rem
+        //         display: flex
+        //         width: 100%
+        //         left: 50%
+        //         transform: translateX(-50%)
+        //         justify-content: space-around
+        //         z-index: 10
+        //         img
+        //             position: relative
+        //             height: 110px
+        //             width: 90px
+        //         .light-container
+        //             display: flex
+        
         .right-0
             position: relative
             overflow: hidden
+            margin-top: 65px
             height: 42.5rem
             width: 40%        
-            .foot, .top-bar, .top-bar-add, .light-01, .light-02, .light-03, .light-04, .light-05
+            .top-bar-add-1, .top-bar-add-2, .foot, .top-bar, .top-bar-add-1, .top-bar-add-2, .light-01, .light-02, .light-03, .light-04, .light-05
                 background-color: $gray
                 border: 1px solid $primary
                 position: absolute
@@ -90,7 +154,7 @@
                 &:hover
                     background-color: darken($gray, 5%)
 
-            .top-bar-add-img, .top-bar-img, .foot-img, .light-01-img, .light-02-img, .light-03-img, .light-04-img, .light-05-img
+            .top-bar-img, .foot-img, .light-01-img, .light-02-img, .light-03-img, .light-04-img, .light-05-img
                 position: absolute
                 align-items: center
                 cursor: pointer
@@ -106,11 +170,19 @@
             .foot-img
                 width: 180px
 
-            .top-bar-add, .top-bar-add-img
+            .top-bar-add-container
                 width: 410px
                 height: 65px
                 left: 50%
                 transform: translateX(-50%)
+                position: absolute
+                display: flex
+                .top-bar-add-1, .top-bar-add-2
+                    position: relative
+                    width: 50%
+                    height: 100%
+                .top-bar-add-1
+                    border-right: none
 
             .top-bar, .top-bar-img
                 top: 4rem
@@ -129,13 +201,18 @@
                 transform: translateX(-50%)
                 justify-content: space-around
                 z-index: 10
-                img
+                .light-02
+                    border-left: none
+                .light-04
+                    border-right: none
+                .light, img
                     position: relative
                     height: 110px
                     width: 90px
                 .light-container
                     display: flex
-        
+
+
         .right-1
             position: relative
             overflow: hidden
