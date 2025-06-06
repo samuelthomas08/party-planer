@@ -32,7 +32,10 @@ const EquipmentItem = ({ title, imgs, category, titleId, equipmentList, setEquip
 
                 <div>
                     {category == 0 ? <div className="img-container">
-                        {imgs.topBarAdd != null ? <img className='top-bar-add' src={imgs.topBarAdd} /> : null}
+                        <div className="top-bar-add-container">
+                            {imgs.topBarAdd1 != null ? <img className='top-bar-add-1' src={imgs.topBarAdd1} /> : null}
+                            {imgs.topBarAdd2 != null ? <img className='top-bar-add-2' src={imgs.topBarAdd2} /> : null}
+                        </div>
                         {imgs.topBar != null ? <img className='top-bar' src={imgs.topBar} /> : null}
                         {imgs.foot != null ? <img className='foot' src={imgs.foot} /> : null}
                         <div className="lights">
