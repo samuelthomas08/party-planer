@@ -75,12 +75,12 @@ const FloorPlanEquipment = ({ data }) => {
 
             <div className='description'>
                 <h3>Beschreibung</h3>
-                <p>{selectedCategory == 0 && currentEquipmentSelection != null ? 
+                <textarea value={selectedCategory == 0 && currentEquipmentSelection != null ? 
                     (currentEquipmentSelection.description == '' ? 
                         'Keine Beschreibung enthalten...' : currentEquipmentSelection.description) : 
                     (currentEquipmentSelection != null ? 
                         (currentEquipmentSelection.description == '' ? 
-                            'Keine Beschreibung enthalten...' : currentEquipmentSelection.description) : null)}</p>
+                            'Keine Beschreibung enthalten...' : currentEquipmentSelection.description) : null)}></textarea>
             </div>
 
             <div className="color-selection">
