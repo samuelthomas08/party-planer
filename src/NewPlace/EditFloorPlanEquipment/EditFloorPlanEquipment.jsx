@@ -126,12 +126,12 @@ const EditFloorPlanEquipment = ({ handleEquipmentDeletion, data, setAbleToCreate
 
             <div className='description'>
                 <h3>Beschreibung</h3>
-                <p>{selectedCategory == 0 && equipmentList[currentEquipmentSelection] != null ? 
+                <textarea value={selectedCategory == 0 && equipmentList[currentEquipmentSelection] != null ? 
                     (equipmentList[currentEquipmentSelection].description == '' ? 
                         'Keine Beschreibung enthalten...' : equipmentList[currentEquipmentSelection].description) : 
                     (otherEquipmentList[currentOtherEquipmentSelection] != null ? 
                         (otherEquipmentList[currentOtherEquipmentSelection].description == '' ? 
-                            'Keine Beschreibung enthalten...' : otherEquipmentList[currentOtherEquipmentSelection].description) : null)}</p>
+                            'Keine Beschreibung enthalten...' : otherEquipmentList[currentOtherEquipmentSelection].description) : null)}></textarea>
             </div>
 
             <div className="color-selection">
