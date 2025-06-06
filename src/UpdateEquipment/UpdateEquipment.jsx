@@ -92,11 +92,11 @@ const UpdateEquipment = () => {
 
             if(data.category == 0) {
                 if(data.contents.topBarAdd1) {
-                    setTopBarAdd1Data({img: data.contents.topBarAdd, imgName: 'topBarAdd'});
+                    setTopBarAdd1Data({img: data.contents.topBarAdd1, imgName: 'topBarAdd'});
                 }
 
                 if(data.contents.topBarAdd2) {
-                    setTopBarAdd2Data({img: data.contents.topBarAdd, imgName: 'topBarAdd'});
+                    setTopBarAdd2Data({img: data.contents.topBarAdd2, imgName: 'topBarAdd'});
                 }
 
                 if(data.contents.topBar) {
