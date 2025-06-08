@@ -9,7 +9,7 @@ import { faArrowUpFromBracket, faFloppyDisk } from '@fortawesome/free-solid-svg-
 import { uid } from 'uid';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import imageCompression from "browser-image-compression";
-import { doc, setDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, onSnapshot, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { db } from '../firebase/firebase';
 
@@ -19,6 +19,9 @@ const NewPlace = () => {
     const nameRef = useRef();
 
     const navigate = useNavigate();
+
+    const [folderList, setFolderList] = useState([]);
+    const folderSelectionRef = useRef('');
 
     const [imgSrc, setImgSrc] = useState('');
     const [imgName, setImgName] = useState('');
@@ -51,10 +54,16 @@ const NewPlace = () => {
     
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('keyup', handleKeyUp);
+        
+        const unsubscribeFolders = onSnapshot(collection(db, "place-folders"), (snapshot) => {
+            const placeFoldersData = snapshot.docs.map(el => ({ id: el.id, ...el.data() }));
+            setFolderList(placeFoldersData);
+        });
 
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
+            unsubscribeFolders();
         };
     }, []);
 
@@ -148,7 +157,7 @@ const NewPlace = () => {
         }
     }
 
-    const saveNewEquipment = () => {
+    const saveNewEquipment = async () => {
         let dbEntryTitle = nameRef.current.value.toLowerCase();
         dbEntryTitle = dbEntryTitle.replace('ä', 'ae');
         dbEntryTitle = dbEntryTitle.replace('ö', 'oe');
@@ -156,17 +165,26 @@ const NewPlace = () => {
         dbEntryTitle = dbEntryTitle.replace(' ', '_');
         const nameId = dbEntryTitle + uid(12);
 
-        const equipment = {
-            equipments: equipmentPlacements,
-            floorPlanImgSrc: imgSrc,
-            floorPlanImgName: imgName,
-            name: nameRef.current.value,
-            nameId: nameId
-        }
+        const folder = await getDoc(doc(db, 'place-folders', folderSelectionRef.current.value)).then(folder => {
+            const editedFolderData = {
+                name: folder.data().name,
+                id: folder.data().id,
+                places: [...folder.data().places, nameId]
+            };
 
-        console.log(equipment);
+            const equipment = {
+                equipments: equipmentPlacements,
+                floorPlanImgSrc: imgSrc,
+                floorPlanImgName: imgName,
+                name: nameRef.current.value,
+                nameId: nameId
+            }
 
-        setDoc(doc(db, 'places', nameId), equipment).then(navigate('/'));
+            console.log(equipment);
+
+            setDoc(doc(db, 'place-folders', folderSelectionRef.current.value), editedFolderData);
+            setDoc(doc(db, 'places', nameId), equipment).then(navigate('/'));
+        });
     }
 
     return (
@@ -202,7 +220,18 @@ const NewPlace = () => {
                             </div>
                         </div>
                     </div>
+                    
+                    {imgSrc != '' ? <div className="box">
+                        <div className="row"><p className="val">Ordner</p></div>
+                        <select ref={folderSelectionRef} className='folder-select'>
+                            {folderList.map(folder => {
+                                return <option value={folder.id}>{folder.name}</option>
+                            })}
+                        </select>
+                    </div> : null}
                 </div>
+
+                
 
                 {imgSrc != '' ? <div className="box">
                     <div className="row"><p className="val">Fertig?</p></div>
