@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import Place from './Place/Place';
 import { Link } from 'react-router-dom';
 import {
-    collection, doc, getDoc, onSnapshot, setDoc
+    collection, deleteDoc, doc, getDoc, onSnapshot, setDoc
 } from 'firebase/firestore';
 import { db } from '../../firebase/firebase';
 import { uid } from 'uid';
@@ -96,6 +96,16 @@ const Places = () => {
         }
     }
 
+    const deleteFolder = (name, id) => {
+        const confirmDelete = prompt(`Gib "${name}" ein, um den Ordner zu löschen:`);
+
+        if(confirmDelete == name) {
+            deleteDoc(doc(db, 'place-folders', id));
+        } else {
+            alert(`${name} wurde nicht gelöscht!`);
+        }
+    }
+
     return (
         <div className="Places">
             <div>
@@ -137,7 +147,7 @@ const Places = () => {
                                 <div className='folder-heading-container'>
                                     <h2 className='folder-heading'>{placeFolder.name}</h2>
                                     <FontAwesomeIcon className='icon' icon={faEdit} onClick={() => showRenameFolderModal(placeFolder.name, placeFolder.id)} />
-                                    <FontAwesomeIcon className='icon' icon={faTrashAlt} />
+                                    <FontAwesomeIcon className='icon' icon={faTrashAlt} onClick={() => deleteFolder(placeFolder.name, placeFolder.id)} />
                                 </div>
                                 {placeFolder.places.length === 0 ? <p>Hier sind noch keine Orte</p> : placeFolder.places.map(place => {
                                     const fetchedPlace = placeList.find(p => p.nameId === place);
