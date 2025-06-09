@@ -35,7 +35,7 @@ const Equipment = () => {
 
             <div className="contents">
                 {equipmentList.map(el => {
-                    return <EquipmentItem title={el.title} category={el.category} description={el.description} imgs={el.contents} titleId={el.titleId} equipmentList={equipmentList} setEquipmentList={setEquipmentList} />
+                    return <EquipmentItem desc={el.description} title={el.title} category={el.category} description={el.description} imgs={el.contents} titleId={el.titleId} equipmentList={equipmentList} setEquipmentList={setEquipmentList} />
                 })}
 
                 <Link className='new-equipment-link' to={'/new-equipment'}>
