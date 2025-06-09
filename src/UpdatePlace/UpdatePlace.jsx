@@ -9,7 +9,7 @@ import { faArrowUpFromBracket, faFloppyDisk } from '@fortawesome/free-solid-svg-
 import { uid } from 'uid';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import imageCompression from "browser-image-compression";
-import { doc, getDoc, query, setDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, onSnapshot, query, setDoc } from 'firebase/firestore';
 import { useNavigate, useParams } from 'react-router-dom';
 import { db } from '../firebase/firebase';
 
@@ -19,6 +19,13 @@ const UpdatePlace = () => {
     const nameRef = useRef();
 
     const [placeTitle, setPlaceTitle] = useState('');
+
+    const [folderList, setFolderList] = useState([]);
+    const [folderSelectLoaded, setFolderSelectLoaded] = useState(false);
+    const folderSelectionRef = useRef('');
+
+    const [originalFolder, setOriginalFolder] = useState();
+    const [originalFolderID, setOriginalFolderID] = useState();
 
     const navigate = useNavigate();
 
@@ -64,6 +71,10 @@ const UpdatePlace = () => {
 
         fetchData();
 
+        
+
+        setTimeout(() => setFolderSelectLoaded(true), 1000)
+
         const handleKeyDown = (event) => {
             const isCreateNewShortcut = event.ctrlKey || event.metaKey;
 
@@ -81,11 +92,35 @@ const UpdatePlace = () => {
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('keyup', handleKeyUp);
 
+        const unsubscribeFolders = onSnapshot(collection(db, "place-folders"), (snapshot) => {
+            const placeFoldersData = snapshot.docs.map(el => ({ id: el.id, ...el.data() }));
+            setFolderList(placeFoldersData);
+            
+            let currentFolder;
+
+            placeFoldersData.map(folder => {
+                console.log('folder: ' + folder);
+                if(folder.places.includes(id)) {
+                    currentFolder = folder;
+                }
+            });
+
+            console.log('currentFolder: ', currentFolder)
+
+                
+            setOriginalFolder(currentFolder);
+        });
+
+
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
+            unsubscribeFolders();
+
         };
     }, []);
+
+        
 
     useEffect(() => {
         if (equipmentPlacements.length > 0) {
@@ -193,8 +228,40 @@ const UpdatePlace = () => {
             nameId: id
         }
 
-        console.log(equipment);
+        const folder = folderList.find(val => val.id == folderSelectionRef.current.value);
 
+        const newFolderData = {
+            name: folder.name,
+            id: folder.id,
+            places: folder.places.includes(id) ? folder.places : [...folder.places, id]
+        }
+
+        let oldFolderData = {
+            name: originalFolder.name,
+            id: originalFolder.id,
+            places: []
+        }
+
+        originalFolder.places.map(place => {
+            if(place != id) {
+                oldFolderData.places.push(place);
+            }
+        });
+
+        console.log('Comparison Old Places vs. New Places:');
+        console.log(originalFolder.places);
+        console.log(oldFolderData.places);
+
+        if(originalFolder.id == newFolderData.id) {
+            console.log('Keine Änderung');
+        } else {
+            console.log('Neue Ordnerauswahl: ' + originalFolder.name + ' -> ' + newFolderData.name);
+        }
+
+        console.log('Original Folder: ', originalFolder);
+
+        setDoc(doc(db, 'place-folders', folder.id), newFolderData);
+        setDoc(doc(db, 'place-folders', originalFolder.id), oldFolderData);
         setDoc(doc(db, 'places', id), equipment).then(navigate('/'));
     }
 
@@ -231,6 +298,15 @@ const UpdatePlace = () => {
                             </div>
                         </div>
                     </div>
+
+                    {folderSelectLoaded && imgSrc != '' ? <div className="box">
+                        <div className="row"><p className="val">Ordner</p></div>
+                        <select ref={folderSelectionRef} className='folder-select'>
+                            {folderList.map(folder => {
+                                return <option selected={originalFolder.id == folder.id ? true : false} key={folder.id} value={folder.id}>{folder.name}</option>
+                            })}
+                        </select>
+                    </div> : null}
                 </div>
 
                 {imgSrc != '' ? <div className="box">
