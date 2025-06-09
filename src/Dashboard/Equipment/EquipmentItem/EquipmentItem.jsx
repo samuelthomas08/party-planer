@@ -7,7 +7,7 @@ import { db } from '../../../firebase/firebase';
 import { doc, deleteDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 
-const EquipmentItem = ({ title, imgs, category, titleId, equipmentList, setEquipmentList }) => {
+const EquipmentItem = ({ desc, title, imgs, category, titleId, equipmentList, setEquipmentList }) => {
 
     const navigate = useNavigate();
 
@@ -25,7 +25,7 @@ const EquipmentItem = ({ title, imgs, category, titleId, equipmentList, setEquip
 
     return (
         <div>
-            <div className="EquipmentItem">
+            <div className="EquipmentItem" title={desc}>
                 <p className="category">{ category == 0 ? 'Ständer' : 'Anderes' }</p>
                 <FontAwesomeIcon onClick={deleteEquipmentHandler} className='delete' icon={faTrashAlt} />
                 <FontAwesomeIcon onClick={updateEquipmentHandler} className='edit' icon={faEdit} />
