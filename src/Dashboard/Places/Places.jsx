@@ -96,13 +96,15 @@ const Places = () => {
         }
     }
 
-    const deleteFolder = (name, id) => {
-        const confirmDelete = prompt(`Gib "${name}" ein, um den Ordner zu löschen:`);
+    const deleteFolder = (name, id, places) => {
+        const confirmDelete = window.confirm(`Willst du wirklich "${name}" (enthält ${places.length} Ort${places.length > 1 ? 'e' : ''}) löschen?`);
 
-        if(confirmDelete == name) {
+        if(confirmDelete) {
+            places.forEach(placeId => {
+                deleteDoc(doc(db, 'places', placeId));
+            });
+
             deleteDoc(doc(db, 'place-folders', id));
-        } else {
-            alert(`${name} wurde nicht gelöscht!`);
         }
     }
 
@@ -147,7 +149,7 @@ const Places = () => {
                                 <div className='folder-heading-container'>
                                     <h2 className='folder-heading'>{placeFolder.name}</h2>
                                     <FontAwesomeIcon className='icon' icon={faEdit} onClick={() => showRenameFolderModal(placeFolder.name, placeFolder.id)} />
-                                    <FontAwesomeIcon className='icon' icon={faTrashAlt} onClick={() => deleteFolder(placeFolder.name, placeFolder.id)} />
+                                    <FontAwesomeIcon className='icon' icon={faTrashAlt} onClick={() => deleteFolder(placeFolder.name, placeFolder.id, placeFolder.places)} />
                                 </div>
                                 {placeFolder.places.length === 0 ? <p>Hier sind noch keine Orte</p> : placeFolder.places.map(place => {
                                     const fetchedPlace = placeList.find(p => p.nameId === place);
