@@ -267,6 +267,16 @@ const UpdatePlace = () => {
         setDoc(doc(db, 'places', id), equipment).then(navigate('/'));
     }
 
+    const updateEquipmentColor = (id, newColor) => {
+        const updated = equipmentPlacements.map(equipment =>
+            equipment.id === id
+                ? { ...equipment, data: { ...equipment.data, color: newColor } }
+                : equipment
+        );
+        setEquipmentPlacements(updated);
+    };
+
+
     return (
         <div className="UpdatePlace">
             <Header pageName={<input value={placeTitle} onChange={e => setPlaceTitle(e.currentTarget.value)} className='new-place-name' placeholder="Party-Ort" />} />
@@ -367,7 +377,7 @@ const UpdatePlace = () => {
 
                 <div className="layout-item-select">
                     {loadedEquipments ? <div>
-                        {equipmentPlacements.map(equipment => <EditFloorPlanEquipment handleEquipmentDeletion={handleEquipmentDeletion} data={equipment} setAbleToCreate={setAbleToCreate} />)}    
+                        {equipmentPlacements.map(equipment => <EditFloorPlanEquipment updateEquipmentColor={updateEquipmentColor} handleEquipmentDeletion={handleEquipmentDeletion} data={equipment} setAbleToCreate={setAbleToCreate} />)}    
                     </div> : <div>
                         <h1>Auswahl</h1>
 
