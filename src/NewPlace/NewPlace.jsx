@@ -187,6 +187,15 @@ const NewPlace = () => {
         });
     }
 
+    const updateEquipmentColor = (id, newColor) => {
+        const updated = equipmentPlacements.map(equipment =>
+            equipment.id === id
+                ? { ...equipment, data: { ...equipment.data, color: newColor } }
+                : equipment
+        );
+        setEquipmentPlacements(updated);
+    };
+
     return (
         <div className="NewPlace">
             <Header pageName={<input ref={nameRef} className='new-place-name' placeholder="Party-Ort" />} />
@@ -289,7 +298,7 @@ const NewPlace = () => {
 
                 <div className="layout-item-select">
                     {imgSrc != '' ? <div>
-                        {equipmentPlacements.map(equipment => <EditFloorPlanEquipment handleEquipmentDeletion={handleEquipmentDeletion} data={equipment} setAbleToCreate={setAbleToCreate} />)}    
+                        {equipmentPlacements.map(equipment => <EditFloorPlanEquipment updateEquipmentColor={updateEquipmentColor} handleEquipmentDeletion={handleEquipmentDeletion} data={equipment} setAbleToCreate={setAbleToCreate} />)}    
                     </div> : <div>
                         <h1>Auswahl</h1>
 

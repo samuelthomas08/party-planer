@@ -9,7 +9,7 @@ import { faCaretRight, faEdit, faFloppyDisk, faTrashCan } from '@fortawesome/fre
 import { collection, getDocs, query } from 'firebase/firestore';
 
 
-const EditFloorPlanEquipment = ({ handleEquipmentDeletion, data, setAbleToCreate }) => {
+const EditFloorPlanEquipment = ({ handleEquipmentDeletion, data, setAbleToCreate, updateEquipmentColor }) => {
 
     const [color, setColor] = useState(data.data.color);
 
@@ -140,6 +140,8 @@ const EditFloorPlanEquipment = ({ handleEquipmentDeletion, data, setAbleToCreate
                     <input readOnly={disableSave ? true : false} onInput={e => {
                         setColor(e.target.value);
                         data.data.color = color;
+                        updateEquipmentColor(data.id, e.target.value);
+
                         console.log(data);
                     }} type='text' id='color' value={color} />
                     <div className="color-represent" style={{background: color}}></div>
