@@ -293,7 +293,6 @@ const NewPlace = () => {
                             })}
                         </div>
                     </div>}
-
                 </div>
 
                 <div className="layout-item-select">

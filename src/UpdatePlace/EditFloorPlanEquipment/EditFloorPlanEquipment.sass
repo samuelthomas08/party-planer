@@ -109,13 +109,19 @@
                         left: 50%
                         transform: translateX(-50%)
 
-                    .top-bar
-                        top: 65px
-                        height: 73px
-                        width: 510px
+                    .top-bar-add-container
+                        width: 410px
+                        height: 65px
                         left: 50%
                         transform: translateX(-50%)
-                        z-index: 100
+                        position: absolute
+                        display: flex
+                        .top-bar-add-1, .top-bar-add-2
+                            position: relative
+                            width: 50%
+                            height: 100%
+                        .top-bar-add-1
+                            border-right: none
 
                     .lights
                         position: absolute

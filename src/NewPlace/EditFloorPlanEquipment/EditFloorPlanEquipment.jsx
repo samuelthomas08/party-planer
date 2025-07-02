@@ -94,7 +94,11 @@ const EditFloorPlanEquipment = ({ handleEquipmentDeletion, data, setAbleToCreate
                             <h3>{equipmentList[currentEquipmentSelection].title}</h3>
 
                             <div className="img-container">
-                                {equipmentList[currentEquipmentSelection].contents.topBarAdd ? <img className='top-bar-add' src={equipmentList[currentEquipmentSelection].contents.topBarAdd} /> : null}
+                                <div className="top-bar-add-container">
+                                    {equipmentList[currentEquipmentSelection].contents.topBarAdd1 ? <img className='top-bar-add-1' src={equipmentList[currentEquipmentSelection].contents.topBarAdd1} /> : null}
+                                    {equipmentList[currentEquipmentSelection].contents.topBarAdd2 ? <img className='top-bar-add-2' src={equipmentList[currentEquipmentSelection].contents.topBarAdd2} /> : null}
+                                </div>
+
                                 {equipmentList[currentEquipmentSelection].contents.topBar ? <img className='top-bar' src={equipmentList[currentEquipmentSelection].contents.topBar} /> : null}
                                 {equipmentList[currentEquipmentSelection].contents.foot ? <img className='foot' src={equipmentList[currentEquipmentSelection].contents.foot} /> : null}
                                 <div className="lights">
