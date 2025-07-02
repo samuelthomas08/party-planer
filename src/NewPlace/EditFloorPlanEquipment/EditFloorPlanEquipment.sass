@@ -109,12 +109,19 @@
                         left: 50%
                         transform: translate(-50%, -65px) !important
 
-                    .top-bar-add
+                    .top-bar-add-container
                         width: 410px
                         height: 65px
-                        top: 0
                         left: 50%
                         transform: translateX(-50%)
+                        position: absolute
+                        display: flex
+                        .top-bar-add-1, .top-bar-add-2
+                            position: relative
+                            width: 50%
+                            height: 100%
+                        .top-bar-add-1
+                            border-right: none
 
                     .top-bar
                         top: 65px
