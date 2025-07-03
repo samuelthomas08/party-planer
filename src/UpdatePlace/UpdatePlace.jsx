@@ -143,6 +143,9 @@ const UpdatePlace = () => {
                 setYCoord(equipment.y * 100);
             }
         });
+
+        console.log('test');
+        console.log(equipmentPlacements);
     
         setEquipmentPlacements(tempPlaces);
     }
@@ -228,43 +231,49 @@ const UpdatePlace = () => {
             nameId: id
         }
 
+        const folder = folderList.find(val => val.id == folderSelectionRef.current.value);
+
+        const newFolderData = {
+            name: folder.name,
+            id: folder.id,
+            places: folder.places.includes(id) ? folder.places : [...folder.places, id]
+        }
+
+        let oldFolderData = {
+            name: originalFolder.name,
+            id: originalFolder.id,
+            places: []
+        }
+
+        originalFolder.places.map(place => {
+            if(place != id) {
+                oldFolderData.places.push(place);
+            }
+        });
+
+        console.log('Comparison Old Places vs. New Places:');
+        console.log(originalFolder.places);
+        console.log(oldFolderData.places);
+
+        if(originalFolder.id == newFolderData.id) {
+            console.log('Keine Änderung');
+        } else {
+            console.log('Neue Ordnerauswahl: ' + originalFolder.name + ' -> ' + newFolderData.name);
+        }
+
+        console.log('Original Folder: ', originalFolder);
+
+        setDoc(doc(db, 'place-folders', folder.id), newFolderData);
+
         if(folderSelectionRef.current.value != originalFolder.id) {
-            const folder = folderList.find(val => val.id == folderSelectionRef.current.value);
-
-            const newFolderData = {
-                name: folder.name,
-                id: folder.id,
-                places: folder.places.includes(id) ? folder.places : [...folder.places, id]
-            }
-
-            let oldFolderData = {
-                name: originalFolder.name,
-                id: originalFolder.id,
-                places: []
-            }
-
-            originalFolder.places.map(place => {
-                if(place != id) {
-                    oldFolderData.places.push(place);
-                }
-            });
-
-            console.log('Comparison Old Places vs. New Places:');
-            console.log(originalFolder.places);
-            console.log(oldFolderData.places);
-
-            if(originalFolder.id == newFolderData.id) {
-                console.log('Keine Änderung');
-            } else {
-                console.log('Neue Ordnerauswahl: ' + originalFolder.name + ' -> ' + newFolderData.name);
-            }
-
-            console.log('Original Folder: ', originalFolder);
-
-            setDoc(doc(db, 'place-folders', folder.id), newFolderData);
+            
             setDoc(doc(db, 'place-folders', originalFolder.id), oldFolderData);
+        } else {
+            console.log('TEST');
         }
         setDoc(doc(db, 'places', id), equipment).then(navigate('/'));
+
+        console.log(equipmentPlacements);
     }
 
     const updateEquipmentColor = (id, newColor) => {
