@@ -13,7 +13,7 @@ const EditFloorPlanEquipment = ({ handleEquipmentDeletion, data, setAbleToCreate
 
     const [color, setColor] = useState(data.data.color);
 
-    const [selectedCategory, setSelectedCategory] = useState(0);
+    const [selectedCategory, setSelectedCategory] = useState(data.data.category);
 
     const [equipmentList, setEquipmentList] = useState([]);
     const [otherEquipmentList, setOtherEquipmentList] = useState([]);
