@@ -74,7 +74,7 @@ jobs:
             type=sha,format=short
 
       - name: Build${{ env.PUSH == 'true' && ' and push' || '' }}
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ${{ matrix.context }}
           # Pull requests build a single architecture quickly; releases are multi-arch.
