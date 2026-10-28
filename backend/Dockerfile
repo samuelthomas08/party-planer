@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # ---- build -------------------------------------------------------------------------------------------
-FROM --platform=$BUILDPLATFORM eclipse-temurin:21-jdk AS build
+FROM --platform=$BUILDPLATFORM eclipse-temurin:24-jdk AS build
 WORKDIR /workspace
 # Dependencies first, so source changes do not re-download them.
 COPY .mvn .mvn
@@ -10,7 +10,7 @@ COPY src src
 RUN --mount=type=cache,target=/root/.m2 ./mvnw -q -B -DskipTests package && mv target/*.jar app.jar
 
 # ---- runtime -----------------------------------------------------------------------------------------
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:25-jre-alpine
 # Unprivileged user; /data/images is where uploaded images live (mount a volume here).
 RUN addgroup -S app && adduser -S -G app -u 10001 app \
  && mkdir -p /data/images && chown app:app /data/images
