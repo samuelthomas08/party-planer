@@ -50,7 +50,7 @@ jobs:
         run: echo "name=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/party-planer-${{ matrix.name }}" >> "$GITHUB_OUTPUT"
 
       - uses: docker/setup-qemu-action@v3
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v4
 
       - name: Log in to GHCR
         if: env.PUSH == 'true'
