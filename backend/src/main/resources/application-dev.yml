@@ -1,0 +1,14 @@
+# Local development only. Never use this profile in production.
+spring:
+  config:
+    # Read the same .env that docker compose uses, so the DB password always matches the database container.
+    import: "optional:file:../.env[.properties]"
+  datasource:
+    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB:partyplaner}
+    username: ${POSTGRES_USER:partyplaner}
+    password: ${POSTGRES_PASSWORD:change-me}
+
+app:
+  security:
+    jwt-secret: dev-only-secret-dev-only-secret-dev-only-secret
+    cookie-secure: false

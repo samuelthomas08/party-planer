@@ -1,0 +1,69 @@
+# Whole stack:   cp .env.example .env && docker compose up --build   ->  http://localhost:3000
+# From GHCR:     docker compose pull && docker compose up -d          (images built by the GitHub workflow)
+# Only Postgres: docker compose up -d db                              (for local development)
+name: party-planer
+
+x-hardening: &hardening
+  restart: unless-stopped
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+
+services:
+  db:
+    <<: *hardening
+    image: postgres:17-alpine
+    # postgres needs a few capabilities to start up and drop privileges itself
+    cap_drop: []
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-partyplaner}
+      POSTGRES_USER: ${POSTGRES_USER:-partyplaner}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    <<: *hardening
+    image: ${REGISTRY:-ghcr.io/samuelthomas08}/party-planer-backend:${IMAGE_TAG:-latest}
+    build: ./backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-partyplaner}
+      DB_USER: ${POSTGRES_USER:-partyplaner}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env (openssl rand -base64 48)}
+      COOKIE_SECURE: ${COOKIE_SECURE:-true}
+      REGISTRATION_ENABLED: ${REGISTRATION_ENABLED:-true}
+      IMAGE_DIR: /data/images
+    volumes:
+      - imagedata:/data/images
+    # No published port: the browser reaches the API only through the frontend's /api proxy.
+    expose:
+      - "8080"
+
+  frontend:
+    <<: *hardening
+    image: ${REGISTRY:-ghcr.io/samuelthomas08}/party-planer-frontend:${IMAGE_TAG:-latest}
+    build:
+      context: ./frontend
+      args:
+        BACKEND_URL: http://backend:8080
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+
+volumes:
+  pgdata:
+  imagedata:
