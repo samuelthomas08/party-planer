@@ -1,0 +1,177 @@
+@import "tailwindcss";
+
+/*
+ * Party Planer theme
+ * -------------------
+ * Grown out of the original look: the periwinkle blue (#5672E4), the cool blue-grey canvas (#F1F4FB)
+ * and the soft red/green status colours. New: a confetti-pink accent, a full brand ramp, ink-coloured
+ * text instead of pure black, and a matching dark mode.
+ *
+ * Components never use raw hex values. They use the semantic tokens below (bg-canvas, text-ink,
+ * border-line, bg-brand-600 ...), so changing the look means editing this file only.
+ */
+
+:root {
+  /* Surfaces & text — light */
+  --canvas: #f1f4fb;
+  --surface: #ffffff;
+  --surface-sunken: #e8ecf7;
+  --ink: #1a1f3a;
+  --ink-soft: #4b5273;
+  --ink-faint: #6e7596;
+  --line: #dfe4f3;
+  --line-strong: #c3cae3;
+  --ring: #5672e4;
+  --shadow-color: 232 35% 30%;
+}
+
+:root[data-theme="dark"] {
+  --canvas: #0d1020;
+  --surface: #161a30;
+  --surface-sunken: #1d2240;
+  --ink: #eef0fb;
+  --ink-soft: #b4bad8;
+  --ink-faint: #8c93b6;
+  --line: #262c4d;
+  --line-strong: #3a4170;
+  --ring: #8fa3f5;
+  --shadow-color: 232 60% 2%;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --canvas: #0d1020;
+    --surface: #161a30;
+    --surface-sunken: #1d2240;
+    --ink: #eef0fb;
+    --ink-soft: #b4bad8;
+    --ink-faint: #8c93b6;
+    --line: #262c4d;
+    --line-strong: #3a4170;
+    --ring: #8fa3f5;
+    --shadow-color: 232 60% 2%;
+  }
+}
+
+@theme inline {
+  --font-sans: var(--font-kumbh), ui-sans-serif, system-ui, sans-serif;
+
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-sunken: var(--surface-sunken);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ring: var(--ring);
+}
+
+@theme {
+  /* Brand ramp, centred on the original primary (#5672E4 = 500) */
+  --color-brand-50: #f1f4fe;
+  --color-brand-100: #e3e8fd;
+  --color-brand-200: #c9d3fb;
+  --color-brand-300: #a4b3f6;
+  --color-brand-400: #7b90ee;
+  --color-brand-500: #5672e4;
+  --color-brand-600: #3f57cc;
+  --color-brand-700: #3445a8;
+  --color-brand-800: #2c3a86;
+  --color-brand-900: #263068;
+
+  /* Confetti accent for highlights and the logo gradient */
+  --color-party-300: #ff9ec4;
+  --color-party-500: #f2559b;
+  --color-party-600: #d93a85;
+
+  /* Status */
+  --color-danger-50: #fdecef;
+  --color-danger-500: #e5304b;
+  --color-danger-600: #c9223c;
+  --color-success-50: #eaf9e8;
+  --color-success-500: #3fae35;
+  --color-success-600: #2f8f27;
+
+  --radius-card: 1.25rem;
+  --radius-control: 0.875rem;
+
+  --shadow-card: 0 1px 2px hsl(var(--shadow-color) / 0.06), 0 6px 20px -8px hsl(var(--shadow-color) / 0.16);
+  --shadow-pop: 0 10px 40px -10px hsl(var(--shadow-color) / 0.35);
+
+  --animate-sheet-up: sheet-up 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-fade-in: fade-in 160ms ease-out;
+  --animate-pop-in: pop-in 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  html[data-theme="dark"] { color-scheme: dark; }
+  @media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]) { color-scheme: dark; }
+  }
+
+  body {
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    min-height: 100dvh;
+  }
+
+  /* 16px minimum stops iOS Safari zooming into focused fields */
+  input, select, textarea { font-size: 1rem; }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer utilities {
+  .pb-safe { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+  .pt-safe { padding-top: env(safe-area-inset-top); }
+  .touch-none-drag { touch-action: none; }
+}
+
+/* Native <dialog> as modal / bottom sheet */
+dialog.sheet {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  max-width: none;
+  max-height: none;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+dialog.sheet::backdrop {
+  background: rgb(10 12 28 / 0.55);
+  backdrop-filter: blur(2px);
+  animation: fade-in 160ms ease-out;
+}

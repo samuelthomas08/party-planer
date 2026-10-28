@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: partyplaner
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/partyplaner}
+    username: ${DB_USER:partyplaner}
+    password: ${DB_PASSWORD:partyplaner}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  servlet:
+    multipart:
+      max-file-size: 6MB
+      max-request-size: 7MB
+  jackson:
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+  # Honour X-Forwarded-* from the reverse proxy / Next.js rewrite so rate limiting sees the real client IP.
+  forward-headers-strategy: framework
+  error:
+    include-message: never
+    include-stacktrace: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+app:
+  storage:
+    # Image files are stored here; the database only keeps a reference (storage_key).
+    image-dir: ${IMAGE_DIR:./data/images}
+  registration-enabled: ${REGISTRATION_ENABLED:true}
+  security:
+    # Required, at least 32 characters. Generate with: openssl rand -base64 48
+    jwt-secret: ${JWT_SECRET:}
+    issuer: partyplaner
+    access-token-ttl: 15m
+    refresh-token-ttl: 14d
+    cookie-secure: ${COOKIE_SECURE:true}
+    # Per client IP, for login/register. Refresh gets three times this.
+    auth-rate-limit-per-minute: 10
+
+logging:
+  pattern:
+    # requestId ties together every line of one HTTP request (also returned as X-Request-Id).
+    console: "%d{HH:mm:ss.SSS} %-5level [%X{requestId:--------}] [%X{user:-anon}] %logger{26} : %m%n"
+  level:
+    root: INFO
+    app.partyplaner: INFO
