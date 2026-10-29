@@ -5,7 +5,7 @@ bis zu jeder Frontend-Komponente. Die Diagramme sind in [Mermaid](https://mermai
 direkt gerendert.
 
 > Stand: entspricht dem Branch `release` (Spring Boot 4.1, Java 21, Next.js 16, React 19, PostgreSQL 17).
-> Kurzanleitung zum Starten steht in der [README](../README.md); hier geht es um das Verständnis des Codes.
+> Kurzanleitung zum Starten steht in der [README](README.md); hier geht es um das Verständnis des Codes.
 
 ## Inhaltsverzeichnis
 
@@ -117,7 +117,8 @@ party-planer/
 ├── docker-compose.yml        Gesamter Stack (db, backend, frontend) – baut oder zieht Images
 ├── .env.example              Vorlage für .env (Passwörter, JWT-Secret, Ports)
 ├── README.md                 Kurzanleitung
-├── docs/DOCUMENTATION.md     Diese Datei
+├── DOCUMENTATION.md          Diese Datei
+├── AGENTS.md                 Arbeitsanleitung für KI-Agenten (CLAUDE.md / GEMINI.md binden sie ein)
 ├── .github/
 │   ├── workflows/ci.yml      Tests, Lint, Build, Docker-Smoke-Test
 │   ├── workflows/docker.yml  Veröffentlicht Images nach GHCR (nur bei grünem CI)
@@ -1108,7 +1109,7 @@ die Bild-ID zurück. Die Verkleinerung entlastet Server und Speicher:
 ### 6.4 Internationalisierung und Theme
 
 **Sprache** (`src/i18n`): Unterstützt `de` (Standard) und `en`. Die Wahl liegt im Cookie `NEXT_LOCALE` (1 Jahr, `SameSite=Lax`).
-`request.ts` liest es serverseitig und lädt `messages/<locale>.json`. Die Server-Action `setLocale` (`actions.ts`) setzt das Cookie; `UserMenu` ruft sie auf und danach `router.refresh()`.
+`request.ts` liest es serverseitig und lädt `messages/<locale>.json`. Die Server-Action `setLocale` (`actions.ts`) setzt das Cookie; `AppearanceSettings` (Einstellungen → Profil) ruft sie auf und danach `router.refresh()`.
 Die Nachrichtendateien sind nach Bereichen gegliedert: `meta, common, menu, auth, dashboard, equipment, places, errors, settings, users, share, activity, audit, logs, invite`.
 Ein Test (`messages.test.ts`) stellt sicher, dass beide Sprachen dieselben Schlüssel haben. Fehlercodes des Servers werden als `errors.<CODE>` übersetzt, Audit-Codes als `audit.action.<…>` / `audit.change.<…>`.
 
@@ -1116,7 +1117,7 @@ Ein Test (`messages.test.ts`) stellt sicher, dass beide Sprachen dieselben Schl�
 
 * Hell (Standard) in `:root`, Dunkel über `:root[data-theme="dark"]` **und** automatisch per `prefers-color-scheme: dark`, solange nicht explizit `data-theme="light"` gesetzt ist.
 * Marken-Rampe `brand-50…900` (Mitte `#5672e4`), Akzent `party-*` (Konfetti-Pink), Statusfarben `danger-*`/`success-*`, Radien `card`/`control`, Animationen `sheet-up`, `fade-in`, `pop-in`.
-* Die Wahl (System/Hell/Dunkel) merkt sich `UserMenu` in `localStorage["pp-theme"]`; das Skript im `<head>` wendet sie vor dem ersten Rendern an.
+* Die Wahl (System/Hell/Dunkel) merkt sich `AppearanceSettings` in `localStorage["pp-theme"]`; das Skript im `<head>` wendet sie vor dem ersten Rendern an.
 
 ### 6.5 Komponenten
 
@@ -1126,7 +1127,7 @@ Ein Test (`messages.test.ts`) stellt sicher, dass beide Sprachen dieselben Schl�
 |---|---|
 | `Providers` | `QueryClientProvider` (mit Logging fehlgeschlagener Mutationen), `ToastProvider`, startet `installGlobalLogging()`. |
 | `AppShell` | **Sitzungs-Pforte** für den App-Bereich: lädt `useMe`; bei `401` und bei `pp:auth-expired` Weiterleitung auf `/login` (Cache wird geleert). Zeigt sticky Kopfzeile mit `Logo` und `UserMenu`, Inhalt, Fußzeile. Ohne Benutzer nur ein Spinner. |
-| `UserMenu` | Konto-Menü: Initialen-Button, Sprachwahl, Theme (System/Hell/Dunkel), Link zu den Einstellungen, Abmelden (`POST /auth/logout`, danach Cache leeren und `/login`). Schließt bei Klick außerhalb und `Esc`. |
+| `UserMenu` | Konto-Menü: Initialen-Button, Name und E-Mail, Link zu den Einstellungen, Abmelden (`POST /auth/logout`, danach Cache leeren und `/login`). Schließt bei Klick außerhalb und `Esc`. |
 | `Logo` | Wortmarke „Party Planer“. |
 | `PageHeader` | Titel mit Zurück-Knopf (`backHref`, Standard `/`) und optionalen Aktionen. |
 | `StickyActions` | Primäraktionen: auf dem Handy am unteren Rand fixiert (Daumenreichweite), ab `sm` inline. |
@@ -1185,7 +1186,8 @@ Ein Test (`messages.test.ts`) stellt sicher, dass beide Sprachen dieselben Schl�
 |---|---|
 | `SettingsNav` | Navigation; Admin-Bereiche nur für Admins sichtbar. |
 | `AdminOnly` | Zeigt für Nicht-Admins eine Fehlermeldung. **Nur Komfort** – die API erzwingt dieselbe Regel. |
-| `ProfileSettings` | Anzeigename (`PATCH /auth/profile`) und Passwort ändern (`POST /auth/password`, beendet andere Sessions). |
+| `ProfileSettings` | Anzeigename (`PATCH /auth/profile`) und Passwort ändern (`POST /auth/password`, beendet andere Sessions); bindet zusätzlich `AppearanceSettings` ein. |
+| `AppearanceSettings` | Karte „Darstellung & Sprache“: Sprachwahl (Server-Action `setLocale`, danach `router.refresh()`) und Theme System/Hell/Dunkel (`localStorage["pp-theme"]`, `data-theme` am `<html>`). |
 | `UsersAdmin` | Benutzerliste + Detail-Sheet: Rolle, aktivieren/deaktivieren, entsperren, Passwort zurücksetzen, löschen; Benutzer anlegen; Einladungen. Eigene Zeile ist vor Selbst-Aussperrung geschützt. |
 | `InvitationsAdmin` (+ `InviteSheet`) | Liste der Einladungen mit Status/Widerruf; Sheet zum Erstellen. Der Link wird **nur einmal** nach dem Erstellen angezeigt. |
 | `AuditAdmin` | Gesamter Verlauf mit Ortsfilter (URL-Parameter `?place=`), inkl. IPs. |

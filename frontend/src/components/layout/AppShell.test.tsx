@@ -8,14 +8,12 @@ vi.mock("next/navigation", async () => {
   const mocks = await import("@/test/mocks");
   return { useRouter: () => mocks.router };
 });
-vi.mock("@/i18n/actions", () => ({ setLocale: vi.fn().mockResolvedValue(undefined) }));
 vi.mock("@/lib/logger", () => ({ log: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() }, installGlobalLogging: vi.fn() }));
 vi.mock("@/lib/api", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/api")>();
   return { ...actual, api: { get: vi.fn(), post: vi.fn(), put: vi.fn(), patch: vi.fn(), delete: vi.fn() } };
 });
 
-import { setLocale } from "@/i18n/actions";
 import { ApiError, AUTH_EXPIRED_EVENT, api } from "@/lib/api";
 import { AppShell } from "./AppShell";
 
@@ -121,29 +119,5 @@ describe("UserMenu", () => {
     await userEvent.click(screen.getByRole("menuitem", { name: "Abmelden" }));
 
     await waitFor(() => expect(router.replace).toHaveBeenCalledWith("/login"));
-  });
-
-  it("changes the language through the server action and refreshes", async () => {
-    await openMenu();
-
-    await userEvent.click(screen.getByRole("button", { name: "en" }));
-
-    await waitFor(() => expect(setLocale).toHaveBeenCalledWith("en"));
-    await waitFor(() => expect(router.refresh).toHaveBeenCalled());
-  });
-
-  it("applies and remembers the chosen theme, and 'system' removes the override", async () => {
-    await openMenu();
-
-    await userEvent.click(screen.getByRole("button", { name: "Dunkel" }));
-    expect(document.documentElement.dataset.theme).toBe("dark");
-    expect(localStorage.getItem("pp-theme")).toBe("dark");
-
-    await userEvent.click(screen.getByRole("button", { name: "Hell" }));
-    expect(document.documentElement.dataset.theme).toBe("light");
-
-    await userEvent.click(screen.getByRole("button", { name: "System" }));
-    expect(document.documentElement.dataset.theme).toBeUndefined();
-    expect(localStorage.getItem("pp-theme")).toBeNull();
   });
 });

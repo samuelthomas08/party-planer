@@ -16,11 +16,6 @@
   },
   "menu": {
     "account": "Account menu",
-    "language": "Language",
-    "theme": "Appearance",
-    "themeSystem": "System",
-    "themeLight": "Light",
-    "themeDark": "Dark",
     "logout": "Log out",
     "settings": "Settings"
   },
@@ -187,7 +182,13 @@
     "changePassword": "Change password",
     "passwordChanged": "Password changed",
     "registration": "Allow registration",
-    "registrationHint": "When off, nobody can sign up on their own. Admins can still create accounts."
+    "registrationHint": "When off, nobody can sign up on their own. Admins can still create accounts.",
+    "language": "Language",
+    "theme": "Appearance",
+    "themeSystem": "System",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "appearance": "Appearance & language"
   },
   "users": {
     "intro": "Manage all accounts: roles, locks, passwords.",

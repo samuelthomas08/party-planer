@@ -1,6 +1,6 @@
 # Party Planer – Hinweise für KI-Agenten und Entwickler
 
-Kompakte Arbeitsanleitung für dieses Repo. Die ausführliche Erklärung steht in [DOCUMENTATION.md](docs/DOCUMENTATION.md), die Bedienung in der [README](README.md).
+Kompakte Arbeitsanleitung für dieses Repo. Die ausführliche Erklärung steht in [DOCUMENTATION.md](DOCUMENTATION.md), die Bedienung in der [README](README.md).
 Diese Datei beschreibt nur, **wie man hier Änderungen macht** und **welche Fallen es gibt**.
 
 ## Projekt in drei Sätzen
