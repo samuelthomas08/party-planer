@@ -105,7 +105,7 @@ export function UserMenu({ user }: { user: User }) {
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label={t("account")}
-        className="flex size-11 items-center justify-center rounded-full bg-brand-100 text-sm font-bold text-brand-700 transition-colors hover:bg-brand-200 dark:bg-brand-900 dark:text-brand-100"
+        className="flex size-11 items-center justify-center rounded-full bg-brand-100 text-sm font-bold text-brand-700 dark:bg-brand-900 dark:text-brand-100"
       >
         {initials || "?"}
       </button>
