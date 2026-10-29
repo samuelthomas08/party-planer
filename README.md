@@ -1,103 +1,199 @@
 # Party Planer
 
-Plan party venues on a floor plan and place your equipment on it.
+Veranstaltungsorte auf einem Grundriss planen und das Equipment darauf platzieren.
 
 | | |
 |---|---|
 | `frontend/` | Next.js 16 (App Router), TypeScript, Tailwind CSS 4, next-intl (de/en), TanStack Query |
 | `backend/`  | Spring Boot 4, Java 21, Spring Security, JPA + Flyway, PostgreSQL 17 |
 
-## Run everything with Docker
+Vollständige Code-Dokumentation mit Diagrammen (Architektur, Datenmodell, Sicherheit, API-Referenz, Frontend): [docs/DOCUMENTATION.md](docs/DOCUMENTATION.md).
+
+## Alles mit Docker starten
 
 ```sh
-cp .env.example .env      # set POSTGRES_PASSWORD and JWT_SECRET (openssl rand -base64 48)
-docker compose up --build # http://localhost:3000   (FRONTEND_PORT in .env changes the port)
+cp .env.example .env      # POSTGRES_PASSWORD und JWT_SECRET setzen (openssl rand -base64 48)
+docker compose up --build # http://localhost:3000   (mit FRONTEND_PORT in der .env ändert sich der Port)
 ```
 
-Three services: `db` (PostgreSQL 17), `backend` (Spring Boot) and `frontend` (Next.js). Only the frontend is published; the API
-is reached through its `/api` proxy, so the backend port is never exposed (it trusts `X-Forwarded-For` for rate limiting, so keep
-it that way). All containers run as unprivileged users with `no-new-privileges`, have health checks, and the web app starts only
-once the API is healthy. Data lives in two named volumes: `pgdata` (database) and `imagedata` (uploaded images).
+Drei Services: `db` (PostgreSQL 17), `backend` (Spring Boot) und `frontend` (Next.js). Nur das Frontend ist veröffentlicht; die API
+wird über dessen `/api`-Proxy erreicht, der Backend-Port ist also nie von außen erreichbar (das Backend vertraut `X-Forwarded-For`
+für das Rate-Limiting, daher muss das so bleiben). Alle Container laufen als unprivilegierte Benutzer mit `no-new-privileges`, haben
+Health-Checks, und die Web-App startet erst, wenn die API gesund ist. Die Daten liegen in zwei benannten Volumes: `pgdata` (Datenbank)
+und `imagedata` (hochgeladene Bilder).
 
-Behind HTTPS set `COOKIE_SECURE=true` (the default; `.env.example` sets `false` for plain-http local trials).
+Hinter HTTPS gilt `COOKIE_SECURE=true` (Standard; die `.env.example` setzt `false` für lokale Tests über reines http).
 
-### Images from GHCR
+> **Wichtig:** Mit `COOKIE_SECURE=true` über **http** verwirft der Browser die Login-Cookies. Registrieren und Anmelden scheinen zu klappen,
+> danach erscheint aber immer wieder „bitte anmelden“. Lösung: HTTPS davorschalten oder zum reinen Testen `COOKIE_SECURE=false` setzen.
 
-The [Publish images](.github/workflows/docker.yml) workflow pushes both images on every push to `release` and on version tags:
+### Images aus der GHCR
+
+Der Workflow [Publish images](.github/workflows/docker.yml) veröffentlicht beide Images bei jedem Push auf `release` und bei Versions-Tags:
 
 ```
-ghcr.io/samuelthomas08/party-planer-backend:latest      (also :sha-<commit>, :1.2.3 for tags v1.2.3)
+ghcr.io/samuelthomas08/party-planer-backend:latest      (auch :sha-<commit>, :1.2.3 für Tags v1.2.3)
 ghcr.io/samuelthomas08/party-planer-frontend:latest
 ```
 
 ```sh
-docker compose pull && docker compose up -d      # uses the published images instead of building
+docker compose pull && docker compose up -d      # nutzt die veröffentlichten Images statt zu bauen
 ```
 
-The first push creates private packages: make them public under *Packages → Package settings*, or `docker login ghcr.io`.
-Images are multi-arch (amd64 + arm64) and carry provenance and SBOM attestations. Pull requests only build, they never push.
+Der erste Push legt private Pakete an: unter *Packages → Package settings* öffentlich machen oder `docker login ghcr.io` verwenden.
+Die Images sind Multi-Arch (amd64 + arm64) und enthalten Provenance- und SBOM-Attestierungen. Pull Requests bauen nur, sie pushen nie.
 
-## Local development
+### Fertige Compose-Datei für einen Server
+
+Kein Checkout nötig: Auf dem Server ein leeres Verzeichnis anlegen (z. B. `/opt/party-planer`), diese zwei Dateien hineinlegen – die
+veröffentlichten Images werden automatisch gezogen.
+
+`.env`: Die Geheimnisse mit `openssl rand -base64 24` (Datenbank) und `openssl rand -base64 48` (JWT) erzeugen:
 
 ```sh
-docker compose up -d db                                   # Postgres on 127.0.0.1:5432
+POSTGRES_PASSWORD=<generiert>
+JWT_SECRET=<generiert>
+COOKIE_SECURE=true          # hinter HTTPS true lassen; false nur für einen Test über reines http
+REGISTRATION_ENABLED=true   # auf false setzen, sobald das eigene Konto existiert
+FRONTEND_PORT=3000
+# IMAGE_TAG=latest          # oder eine Version festnageln, z. B. 1.2.3
+```
+
+`docker-compose.yml`:
+
+```yaml
+name: party-planer
+
+x-hardening: &hardening
+  restart: unless-stopped
+  security_opt:
+    - no-new-privileges:true
+
+services:
+  db:
+    <<: *hardening
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: partyplaner
+      POSTGRES_USER: partyplaner
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U partyplaner -d partyplaner"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    <<: *hardening
+    image: ghcr.io/samuelthomas08/party-planer-backend:${IMAGE_TAG:-latest}
+    cap_drop: [ALL]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/partyplaner
+      DB_USER: partyplaner
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env (openssl rand -base64 48)}
+      COOKIE_SECURE: ${COOKIE_SECURE:-true}
+      REGISTRATION_ENABLED: ${REGISTRATION_ENABLED:-true}
+      IMAGE_DIR: /data/images
+    volumes:
+      - imagedata:/data/images
+    # Bewusst nicht veröffentlicht: Die API ist nur über den /api-Proxy des Frontends erreichbar.
+    expose:
+      - "8080"
+
+  frontend:
+    <<: *hardening
+    image: ghcr.io/samuelthomas08/party-planer-frontend:${IMAGE_TAG:-latest}
+    cap_drop: [ALL]
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+
+volumes:
+  pgdata:
+  imagedata:
+```
+
+```sh
+docker compose up -d       # http://<server>:3000, das erste registrierte Konto wird Admin
+docker compose pull && docker compose up -d   # später aktualisieren
+```
+
+Hinweise:
+
+- Einen Reverse-Proxy mit HTTPS (Caddy, Traefik, nginx) vor Port 3000 schalten und `COOKIE_SECURE=true` lassen; über reines http werden die Login-Cookies nicht gesendet. Damit nur der Proxy erreichbar ist, den Port an localhost binden: `"127.0.0.1:${FRONTEND_PORT:-3000}:3000"`.
+- Das Frontend-Image ist für `BACKEND_URL=http://backend:8080` gebaut, der Service muss also `backend` heißen.
+- Die Datenbank ist nicht veröffentlicht. Falls du früher andere Datenbanknamen als `partyplaner` genutzt hast, passe sie in den Services `db` und `backend` entsprechend an.
+- Die Volumes `pgdata` und `imagedata` immer gemeinsam sichern (siehe *Bildspeicher*). Sind die GHCR-Pakete privat, vorher `docker login ghcr.io` ausführen.
+
+## Lokale Entwicklung
+
+```sh
+docker compose up -d db                                   # Postgres auf 127.0.0.1:5432
 cd backend  && ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 cd frontend && npm install && npm run dev                 # http://localhost:3000
 ```
 
-The `dev` profile reads the same `.env` as Docker Compose, so database name, user and password always match.
+Das Profil `dev` liest dieselbe `.env` wie Docker Compose, daher stimmen Datenbankname, Benutzer und Passwort immer überein.
 
-> **Upgrading a local setup:** the default database name and user are now `partyplaner` (they used to be `partyplanner`). A database
-> volume created earlier keeps its old names: either add `POSTGRES_DB=partyplanner` and `POSTGRES_USER=partyplanner` to your `.env`,
-> or start fresh with `docker compose down -v`.
+> **Lokales Setup aktualisieren:** Datenbankname und -benutzer heißen jetzt standardmäßig `partyplaner` (früher `partyplanner`). Ein früher
+> angelegtes Datenbank-Volume behält die alten Namen: entweder `POSTGRES_DB=partyplanner` und `POSTGRES_USER=partyplanner` in die `.env`
+> eintragen oder mit `docker compose down -v` neu beginnen.
 
-## Tests and quality gates
+## Tests und Qualitätssicherung
 
-| | command | what it covers |
+| | Befehl | Was abgedeckt wird |
 |---|---|---|
-| Backend | `cd backend && ./mvnw verify` | ~240 tests: unit tests (services with Mockito, filters, storage, diff logic, entities) plus integration tests against a real PostgreSQL via Testcontainers (needs Docker). JaCoCo report in `target/site/jacoco`. |
-| Frontend | `cd frontend && npm test` | ~275 Vitest + Testing Library tests (API client incl. CSRF and refresh, logger, forms, editor, admin screens, translations). `npm run test:coverage` for a report. |
-| Static | `npm run lint && npm run typecheck` | ESLint, `tsc --noEmit` |
+| Backend | `cd backend && ./mvnw verify` | ~240 Tests: Unit-Tests (Services mit Mockito, Filter, Storage, Diff-Logik, Entities) plus Integrationstests gegen eine echte PostgreSQL über Testcontainers (Docker nötig). JaCoCo-Bericht in `target/site/jacoco`. |
+| Frontend | `cd frontend && npm test` | ~275 Vitest- + Testing-Library-Tests (API-Client inkl. CSRF und Refresh, Logger, Formulare, Editor, Admin-Oberflächen, Übersetzungen). `npm run test:coverage` für einen Bericht. |
+| Statisch | `npm run lint && npm run typecheck` | ESLint, `tsc --noEmit` |
 
-If an IDE compiles into `target/` in the background and Maven then reports *"Unresolved compilation problem"*, run `./mvnw clean verify`.
+Kompiliert eine IDE im Hintergrund nach `target/` und Maven meldet danach *„Unresolved compilation problem“*, hilft `./mvnw clean verify`.
 
 ### CI
 
-[`ci.yml`](.github/workflows/ci.yml) runs on every push and pull request: backend tests, frontend lint / types / tests / build, and a
-smoke test that builds the images, starts the whole stack with `docker compose`, registers a user, uploads an image and checks that it
-landed in the image volume. [`docker.yml`](.github/workflows/docker.yml) reuses it and only publishes when it is green. Dependabot keeps
-Maven, npm, Docker and the actions up to date.
+[`ci.yml`](.github/workflows/ci.yml) läuft bei jedem Push und Pull Request: Backend-Tests, Frontend-Lint / -Typen / -Tests / -Build und ein
+Smoke-Test, der die Images baut, den gesamten Stack mit `docker compose` startet, einen Benutzer registriert, ein Bild hochlädt und prüft,
+dass es im Bild-Volume gelandet ist. [`docker.yml`](.github/workflows/docker.yml) nutzt ihn wieder und veröffentlicht nur bei grünem Ergebnis.
+Dependabot hält Maven, npm, Docker und die Actions aktuell.
 
-## Image storage
+## Bildspeicher
 
-Uploaded images are **files**, not database rows. They live in `IMAGE_DIR` (default `backend/data/images` in development, the `imagedata` Docker volume at `/data/images` in production), sharded as `ab/ab12….png`. The database only stores the metadata and the `storage_key` pointing at the file; the API streams the file with long-lived cache headers.
+Hochgeladene Bilder sind **Dateien**, keine Datenbankzeilen. Sie liegen in `IMAGE_DIR` (Standard `backend/data/images` in der Entwicklung, das Docker-Volume `imagedata` unter `/data/images` in Produktion), aufgeteilt als `ab/ab12….png`. Die Datenbank speichert nur die Metadaten und den `storage_key`, der auf die Datei zeigt; die API liefert die Datei mit langlebigen Cache-Headern aus.
 
-- **Back up the database and the image directory together.** One without the other leaves dangling references.
-- Files are written atomically, removed again if the surrounding transaction rolls back, and deleted only after a delete has committed. A nightly job removes uploads that were never attached to anything and files without a database row.
-- Upgrading from the database-stored version: on first start the backend moves every existing image to disk automatically (`IMAGE_MIGRATION_*` in the log). Afterwards `images.data` is empty; once you have checked the result you can reclaim the space with `alter table images drop column data;` followed by `vacuum full images;`.
+- **Datenbank und Bildverzeichnis immer gemeinsam sichern.** Das eine ohne das andere hinterlässt ins Leere zeigende Verweise.
+- Dateien werden atomar geschrieben, bei einem Rollback der umgebenden Transaktion wieder entfernt und erst gelöscht, nachdem das Löschen committed wurde. Ein nächtlicher Job entfernt Uploads, die nie zugeordnet wurden, sowie Dateien ohne Datenbankzeile.
+- Umstieg von der Version mit Bildern in der Datenbank: Beim ersten Start verschiebt das Backend alle vorhandenen Bilder automatisch auf die Platte (`IMAGE_MIGRATION_*` im Log). Danach ist `images.data` leer; nach einer Kontrolle des Ergebnisses lässt sich der Platz mit `alter table images drop column data;` und anschließend `vacuum full images;` freigeben.
 
-## Authentication
+## Authentifizierung
 
-Self-hosted, no third-party service.
+Selbst gehostet, ohne Drittanbieter.
 
-- Passwords hashed with Argon2id. Accounts lock for 15 min after 5 failed logins (same generic error, so no account enumeration). Login/register are rate limited per IP.
-- 15-minute JWT access token plus an opaque, rotating 14-day refresh token (stored only as SHA-256 hash). Replaying an already-rotated token revokes the whole session family.
-- Both tokens are `httpOnly`, `SameSite=Strict` cookies, never readable by JavaScript.
-- CSRF: double-submit `XSRF-TOKEN` cookie / `X-XSRF-TOKEN` header on every state-changing request.
-- Every row is scoped to its owner; other users' data answers 404. Uploads are type-checked by magic bytes (PNG/JPEG/WebP only).
+- Passwörter werden mit Argon2id gehasht. Konten sperren sich nach 5 Fehlversuchen für 15 Min. (gleiche allgemeine Fehlermeldung, damit keine Konten erraten werden können). Login und Registrierung sind pro IP ratenbegrenzt.
+- 15 Minuten gültiges JWT als Access-Token plus ein undurchsichtiges, rotierendes 14-Tage-Refresh-Token (nur als SHA-256-Hash gespeichert). Wird ein bereits rotiertes Token erneut vorgelegt, wird die gesamte Sitzungsfamilie widerrufen.
+- Beide Token sind `httpOnly`-Cookies mit `SameSite=Strict` und für JavaScript nie lesbar.
+- CSRF: Double-Submit aus Cookie `XSRF-TOKEN` und Header `X-XSRF-TOKEN` bei jeder zustandsändernden Anfrage.
+- Jede Zeile gehört ihrem Besitzer; Daten anderer Benutzer antworten mit 404. Uploads werden anhand der Magic Bytes geprüft (nur PNG/JPEG/WebP).
 
-## Roles, sharing and history
+## Rollen, Freigaben und Verlauf
 
-- **Admins** (the first account to register is admin automatically) get *Settings → Users* (roles, disable/enable, unlock, password reset, delete, create), *Audit log*, *Live log* and *System* (open/close registration). The last active admin can never be removed, and nobody can lock themselves out. Disabling or demoting a user cuts off their open sessions immediately.
-- **Invitations**: *Settings → Users → Invite* creates a one-time link (`/invite/<token>`, valid 24 h / 7 d / 30 d, role preset, e-mail optionally fixed). The invited person picks their own name and password and is signed in right away. Works even while public registration is closed. Only a hash of the token is stored, so the link is shown once at creation and can be revoked until it is used.
-- **Share links**: on a place, *Share* creates a random link (24 h / 7 d / 30 d / unlimited, revocable at any time). Visitors enter a name and continue as **guest**: read-only access to that single place, no account. A guest token cannot touch the normal API, and revoking the link ends guest sessions at once.
-- **History**: every change is recorded permanently with who (user, guest or system), what, when, which place and exactly how (renames, markers added/moved/recoloured/re-assigned, floor plan replaced, ...). Owners see it per place (*History*), admins see everything incl. IP addresses and history of deleted places in *Settings → Audit log*.
-- **Logging**: every backend event is logged as `EVENT_CODE key=value` with a per-request id (also sent as `X-Request-Id`) and the acting user. The browser ships its own events and uncaught errors to the same log. *Settings → Live log* streams it live (pause, search, level filter, download) and lets admins change the server log level at runtime. Passwords, tokens and share-link secrets are never logged.
+- **Admins** (das erste registrierte Konto wird automatisch Admin) erhalten *Einstellungen → Benutzer* (Rollen, deaktivieren/aktivieren, entsperren, Passwort zurücksetzen, löschen, anlegen), *Audit-Log*, *Live-Log* und *System* (Registrierung öffnen/schließen). Der letzte aktive Admin kann nie entfernt werden, und niemand kann sich selbst aussperren. Wird ein Benutzer deaktiviert oder herabgestuft, werden seine offenen Sitzungen sofort beendet.
+- **Einladungen**: *Einstellungen → Benutzer → Einladen* erstellt einen Einmal-Link (`/invite/<token>`, gültig 24 Std. / 7 Tage / 30 Tage, Rolle vorgegeben, E-Mail optional festgelegt). Die eingeladene Person wählt Namen und Passwort selbst und ist sofort angemeldet. Funktioniert auch bei geschlossener öffentlicher Registrierung. Es wird nur ein Hash des Tokens gespeichert, der Link wird deshalb nur einmal bei der Erstellung angezeigt und kann bis zur Nutzung widerrufen werden.
+- **Share-Links**: Bei einem Ort erstellt *Teilen* einen zufälligen Link (24 Std. / 7 Tage / 30 Tage / unbegrenzt, jederzeit widerrufbar). Besucher geben einen Namen ein und machen als **Gast** weiter: reiner Lesezugriff auf genau diesen einen Ort, ohne Konto. Ein Gast-Token kann die normale API nicht nutzen, und mit dem Widerruf des Links enden Gast-Sitzungen sofort.
+- **Verlauf**: Jede Änderung wird dauerhaft protokolliert – wer (Benutzer, Gast oder System), was, wann, bei welchem Ort und genau wie (Umbenennungen, Marker hinzugefügt/verschoben/umgefärbt/neu zugewiesen, Grundriss ausgetauscht, ...). Besitzer sehen ihn pro Ort (*Verlauf*), Admins sehen alles inkl. IP-Adressen und den Verlauf gelöschter Orte unter *Einstellungen → Audit-Log*.
+- **Logging**: Jedes Backend-Ereignis wird als `EVENT_CODE key=value` mit einer Request-ID (auch als `X-Request-Id` gesendet) und dem handelnden Benutzer protokolliert. Der Browser schickt seine eigenen Ereignisse und unbehandelte Fehler in dasselbe Log. *Einstellungen → Live-Log* zeigt es live (Pause, Suche, Level-Filter, Download) und lässt Admins das Server-Log-Level zur Laufzeit ändern. Passwörter, Token und Share-Link-Geheimnisse werden nie protokolliert.
 
 ## Theme
 
-All colours, radii and shadows are tokens in `frontend/src/app/globals.css` (brand ramp from the original `#5672E4`, a confetti-pink accent, light and dark mode). Components use only the semantic tokens.
+Alle Farben, Radien und Schatten sind Tokens in `frontend/src/app/globals.css` (Markenfarbskala ausgehend vom ursprünglichen `#5672E4`, ein konfettipinker Akzent, heller und dunkler Modus). Komponenten verwenden ausschließlich die semantischen Tokens.
 
-## Migrating from the Firebase version
+## Umstieg von der Firebase-Version
 
-Data is not migrated: the old app stored everything in one shared Firestore with a single password. Re-enter places and equipment, or ask for an import script.
+Daten werden nicht migriert: Die alte App speicherte alles in einem gemeinsamen Firestore mit einem einzigen Passwort. Orte und Equipment neu erfassen oder ein Import-Skript anfragen.
