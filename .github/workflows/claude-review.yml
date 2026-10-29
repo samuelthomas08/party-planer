@@ -1,0 +1,65 @@
+name: Claude Code Review
+
+# Automatisches Review jedes Pull Requests durch Claude Code (Kommentare am PR und inline im Diff).
+# Voraussetzung: Repository-Secret CLAUDE_CODE_OAUTH_TOKEN (Settings → Secrets and variables → Actions;
+# erzeugen mit `claude setup-token`) und die Claude GitHub App (https://github.com/apps/claude) für das Repository.
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review, reopened]
+
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  review:
+    name: Claude Review
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Keine Entwürfe, keine Bot-PRs (Dependabot) und keine Forks: dort stehen die Secrets nicht zur Verfügung.
+    if: >-
+      github.event.pull_request.draft == false &&
+      github.actor != 'dependabot[bot]' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            Prüfe diesen Pull Request und antworte auf Deutsch.
+
+            Lies zuerst `AGENTS.md` im Repository-Root: Dort stehen die Konventionen und bekannten Fallen dieses Projekts.
+            Hole dir den Diff mit `gh pr diff` und die Beschreibung mit `gh pr view`. Lies bei Bedarf die betroffenen Dateien im Ganzen.
+
+            Worauf du achten sollst, in dieser Reihenfolge:
+            1. Korrektheit: Logikfehler, Randfälle, Race Conditions, falsche Transaktionsgrenzen, Fehler in der Marker-/Verlaufslogik.
+            2. Sicherheit: fehlende Besitzprüfung (fremde Daten müssen 404 liefern), neue Endpunkte ohne Regel in `SecurityConfig`,
+               CSRF/Cookie-Handling, Token oder Passwörter in Logs oder Antworten, Zugriff auf Dateien außerhalb von `ImageStorage`.
+            3. Datenbank: Bestehende Flyway-Migrationen dürfen nie geändert werden; Entity und Migration müssen zusammenpassen.
+            4. Projektregeln aus `AGENTS.md`: Texte in `de.json` und `en.json`, Audit-Eintrag in derselben Transaktion,
+               keine Roh-Hex-Farben im Frontend, API-Zugriffe nur über `lib/api.ts`.
+            5. Tests: Fehlen Tests für neue Logik?
+
+            Kein Stil-Nitpicking, nichts, was Linter oder CI ohnehin melden, und keine Lob-Kommentare.
+            Melde nur Befunde, bei denen du dir sicher bist, und nenne jeweils kurz die Auswirkung und einen konkreten Verbesserungsvorschlag.
+
+            Ausgabe:
+            - Schreibe konkrete Befunde als Inline-Kommentare an die betroffene Zeile (`mcp__github_inline_comment__create_inline_comment`).
+            - Schreibe am Ende genau einen Zusammenfassungs-Kommentar mit `gh pr comment`: Kurzfazit (1–3 Sätze), Liste der Befunde
+              nach Schwere (Kritisch / Wichtig / Hinweis) oder "Keine Auffälligkeiten".
+          claude_args: |
+            --max-turns 20
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(git diff:*),Bash(git log:*)"
