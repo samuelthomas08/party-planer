@@ -3,6 +3,11 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderApp } from "@/test/utils";
 
+vi.mock("next/navigation", async () => {
+  const mocks = await import("@/test/mocks");
+  return { useRouter: () => mocks.router };
+});
+vi.mock("@/i18n/actions", () => ({ setLocale: vi.fn().mockResolvedValue(undefined) }));
 vi.mock("@/lib/logger", () => ({ log: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() }, installGlobalLogging: vi.fn() }));
 vi.mock("@/lib/api", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/api")>();

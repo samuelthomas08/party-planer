@@ -7,7 +7,7 @@ Veranstaltungsorte auf einem Grundriss planen und das Equipment darauf platziere
 | `frontend/` | Next.js 16 (App Router), TypeScript, Tailwind CSS 4, next-intl (de/en), TanStack Query |
 | `backend/`  | Spring Boot 4, Java 21, Spring Security, JPA + Flyway, PostgreSQL 17 |
 
-Vollständige Code-Dokumentation mit Diagrammen (Architektur, Datenmodell, Sicherheit, API-Referenz, Frontend): [docs/DOCUMENTATION.md](docs/DOCUMENTATION.md).
+Vollständige Code-Dokumentation mit Diagrammen (Architektur, Datenmodell, Sicherheit, API-Referenz, Frontend): [DOCUMENTATION.md](DOCUMENTATION.md).
 
 ## Alles mit Docker starten
 

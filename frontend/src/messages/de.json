@@ -16,11 +16,6 @@
   },
   "menu": {
     "account": "Konto-Menü",
-    "language": "Sprache",
-    "theme": "Darstellung",
-    "themeSystem": "System",
-    "themeLight": "Hell",
-    "themeDark": "Dunkel",
     "logout": "Abmelden",
     "settings": "Einstellungen"
   },
@@ -187,7 +182,13 @@
     "changePassword": "Passwort ändern",
     "passwordChanged": "Passwort geändert",
     "registration": "Registrierung erlauben",
-    "registrationHint": "Wenn deaktiviert, können sich keine neuen Nutzer selbst registrieren. Admins können weiterhin Konten anlegen."
+    "registrationHint": "Wenn deaktiviert, können sich keine neuen Nutzer selbst registrieren. Admins können weiterhin Konten anlegen.",
+    "language": "Sprache",
+    "theme": "Darstellung",
+    "themeSystem": "System",
+    "themeLight": "Hell",
+    "themeDark": "Dunkel",
+    "appearance": "Darstellung & Sprache"
   },
   "users": {
     "intro": "Alle Konten verwalten: Rollen, Sperren, Passwörter.",

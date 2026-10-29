@@ -13,8 +13,9 @@ import { Button } from "../ui/Button";
 import { PasswordInput, TextInput } from "../ui/Field";
 import { Badge, Card, ErrorNote } from "../ui/misc";
 import { useToast } from "../ui/Toast";
+import { AppearanceSettings } from "./AppearanceSettings";
 
-/** Own display name and password. */
+/** Own display name, password, language and theme. */
 export function ProfileSettings() {
   const t = useTranslations();
   const toast = useToast();
@@ -90,6 +91,8 @@ export function ProfileSettings() {
           </Button>
         </form>
       </Card>
+
+      <AppearanceSettings />
     </div>
   );
 }
